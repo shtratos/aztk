@@ -45,6 +45,17 @@ def _run_on_this_node(plugin_obj=None, is_master=False, is_worker=False):
 def _setup_plugins(plugins_manifest, is_master=False, is_worker=False):
     plugins_dir = _plugins_dir()
 
+    if is_master:
+        os.environ["IS_MASTER"] = "1"
+    else:
+        os.environ["IS_MASTER"] = "0"
+
+    if is_worker:
+        os.environ["IS_WORKER"] = "1"
+    else:
+        os.environ["IS_WORKER"] = "0"
+
+
     for plugin in plugins_manifest:
         if _run_on_this_node(plugin, is_master, is_worker):
             path = os.path.join(plugins_dir, plugin['execute'])
