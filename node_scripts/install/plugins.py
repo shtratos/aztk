@@ -1,7 +1,7 @@
 import os
 import json
+import subprocess
 from pathlib import Path
-
 
 def _read_manifest_file(path=None):
     custom_scripts = None
@@ -47,15 +47,15 @@ def _setup_plugins(plugins_manifest, is_master=False, is_worker=False):
 
     for plugin in plugins_manifest:
         if _run_on_this_node(plugin, is_master, is_worker):
-            path = os.path.join(plugins_dir, plugin['execute']
+            path = os.path.join(plugins_dir, plugin['execute'])
             _run_script(path, args)
 
 
-def _run_script(script_path: str=None, args: dict):
+def _run_script(script_path: str=None, args: dict = None):
     if not os.path.isfile(script_path):
         print("Cannot run plugin script: {0} file does not exist".format(script_path))
         return
-    file_stat=os.stat(script_path)
+    file_stat = os.stat(script_path)
     os.chmod(script_path, file_stat.st_mode | 0o777)
     print("Running plugin script:", script_path)
 
