@@ -127,6 +127,7 @@ def __cluster_install_cmd(zip_resource_file: batch_models.ResourceFile,
                           gpu_enabled: bool,
                           docker_repo: str = None,
                           file_mounts = [],
+                          plugins = None,
                           mixed_mode: bool = False):
     """
         For Docker on ubuntu 16.04 - return the command line
@@ -162,7 +163,7 @@ def __cluster_install_cmd(zip_resource_file: batch_models.ResourceFile,
             constants.DOCKER_SPARK_CONTAINER_NAME,
             gpu_enabled,
             docker_repo,
-            __docker_run_cmd(docker_repo, gpu_enabled, file_mounts, mixed_mode)),
+            __docker_run_cmd(docker_repo, gpu_enabled, file_mounts, plugins, mixed_mode)),
     ]
 
     commands = shares + setup
