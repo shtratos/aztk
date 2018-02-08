@@ -22,8 +22,8 @@ class PluginManager:
         """
         path = os.path.abspath(path)
         plugin_module = self._load_plugin_module(path)
-        manifest = plugin_module.manifest()
-        self.plugins[manifest.name] = self._expand_definition(path, manifest)
+        definition = plugin_module.definition()
+        self.plugins[definition.name] = self._expand_definition(path, definition)
 
     def _load_plugin_module(self, path: str):
         entry_file = self._get_entry_point(path)
@@ -44,9 +44,9 @@ class PluginManager:
         return entry
 
     def _validate_plugin_module(self, path, plugin_module):
-        if not hasattr(plugin_module, "manifest"):
+        if not hasattr(plugin_module, "definition"):
             raise error.InvalidPluginDefinition(
-                "Plugin cannot be loaded. Plugin '{0}' is missing a manifest function".format(path))
+                "Plugin cannot be loaded. Plugin '{0}' is missing a function called 'definition'".format(path))
 
 
     def _expand_definition(self, path: str, definition: PluginDefinition):

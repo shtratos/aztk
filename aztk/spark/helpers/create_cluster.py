@@ -13,7 +13,7 @@ POOL_ADMIN_USER_IDENTITY = batch_models.UserIdentity(
 '''
 Cluster create helper methods
 '''
-def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mounts = [], mixed_mode = False) -> str:
+def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mounts = [], plugins = None, mixed_mode = False) -> str:
     """
         Build the docker run command by setting up the environment variables
     """
@@ -55,7 +55,6 @@ def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mo
     cmd.add_option('-p', '8080:8080')       # Spark Master UI
     cmd.add_option('-p', '7077:7077')       # Spark Master
     cmd.add_option('-p', '4040:4040')       # Job UI
-    cmd.add_option('-p', '8888:8888')       # Jupyter UI
     cmd.add_option('-p', '8787:8787')       # Rstudio Server
     cmd.add_option('-p', '18080:18080')     # Spark History Server UI
     cmd.add_option('-p', '3022:3022')       # Docker SSH
@@ -66,9 +65,14 @@ def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mo
     cmd.add_option('-p', '50070:50070')     # Namenode WebUI
     cmd.add_option('-p', '50075:50075')     # DataNode WebUI
     cmd.add_option('-p', '50090:50090')     # Secondary NameNode http address
+    if plugins:
+        for plugin in plugins:
+            for port in plugin.ports:
+                cmd.add_option('-p', '{0}:{1}'.format(port.remote, port.remote))       # Jupyter UI
+
     cmd.add_option('-d', docker_repo)
     cmd.add_argument('/bin/bash /mnt/batch/tasks/startup/wd/docker_main.sh')
-       
+
     return cmd.to_str()
 
 def __get_docker_credentials(spark_client):
@@ -170,6 +174,7 @@ def generate_cluster_start_task(
         gpu_enabled: bool,
         docker_repo: str = None,
         file_shares: List[aztk_models.FileShare] = None,
+        plugins: List[aztk_models.PluginConfiguration] = None,
         mixed_mode: bool = False):
     """
         This will return the start task object for the pool to be created.
@@ -183,7 +188,7 @@ def generate_cluster_start_task(
     spark_jupyter_port = constants.DOCKER_SPARK_JUPYTER_PORT
     spark_job_ui_port = constants.DOCKER_SPARK_JOB_UI_PORT
     spark_rstudio_server_port = constants.DOCKER_SPARK_RSTUDIO_SERVER_PORT
-    
+
     spark_container_name = constants.DOCKER_SPARK_CONTAINER_NAME
     spark_submit_logs_file = constants.SPARK_SUBMIT_LOGS_FILE
 

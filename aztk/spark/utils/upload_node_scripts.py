@@ -125,10 +125,8 @@ def zip_scripts(blob_client, container_id, custom_scripts, spark_configuration, 
 
     if plugins:
         for plugin in plugins:
-            for script in plugin.manifest().scripts:
+            for script in plugin.definition().scripts:
                 zipf = __add_file_to_zip(zipf, script, 'plugins/{0}'.format(plugin.name), binary=False)
-
-            print("Abc")
 
     if user_conf:
         encrypted_aes_session_key, cipher_aes_nonce, tag, ciphertext = encrypt_password(spark_configuration.ssh_key_pair['pub_key'], user_conf.password)

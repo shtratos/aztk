@@ -24,7 +24,7 @@ class Client(BaseClient):
         cluster_conf.validate()
         for plugin in cluster_conf.plugins:
             if self.plugin_manager.has_plugin(plugin.name):
-                plugin.set_manifest(self.plugin_manager.get_plugin(plugin.name))
+                plugin.set_definition(self.plugin_manager.get_plugin(plugin.name))
             else:
                 raise error.AztkError("Cannot find a plugin with name '{0}'".format(plugin.name))
 
@@ -37,13 +37,15 @@ class Client(BaseClient):
                                                                  cluster_conf.cluster_id,
                                                                  cluster_conf.custom_scripts,
                                                                  cluster_conf.spark_configuration,
-                                                                 cluster_conf.user_configuration)
+                                                                 cluster_conf.user_configuration,
+                                                                 cluster_conf.plugins)
 
             start_task = create_cluster_helper.generate_cluster_start_task(self,
                                                                            zip_resource_files,
                                                                            cluster_conf.gpu_enabled(),
                                                                            cluster_conf.docker_repo,
                                                                            cluster_conf.file_shares,
+                                                                           cluster_conf.plugins,
                                                                            cluster_conf.mixed_mode())
 
             software_metadata_key = "spark"
