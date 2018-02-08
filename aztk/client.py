@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
 import aztk.models as models
+from aztk.plugins.internal import PluginManager
 import azure.batch.models as batch_models
 import azure.batch.models.batch_error as batch_error
 import aztk.utils.azure_api as azure_api
@@ -24,6 +25,8 @@ class Client:
         azure_api.validate_secrets(secrets_config)
         self.batch_client = azure_api.make_batch_client(secrets_config)
         self.blob_client = azure_api.make_blob_client(secrets_config)
+        self.plugin_manager = PluginManager()
+        self.plugin_manager.load_plugin("./aztk_plugins/jupyter")
 
     '''
     General Batch Operations
