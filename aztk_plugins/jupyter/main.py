@@ -1,8 +1,8 @@
-from aztk.plugins import PluginManifest, PluginPort
+from aztk.plugins import PluginDefinition, PluginPort
 
 
-def manifest():
-    return PluginManifest(
+def definition():
+    return PluginDefinition(
         name="jupyter",
         ports=[
             PluginPort(

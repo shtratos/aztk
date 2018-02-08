@@ -100,17 +100,17 @@ def execute(args: typing.NamedTuple):
     spinner.start()
 
     # create spark cluster
-    # cluster = spark_client.create_cluster(
-    #     cluster_conf,
-    #     wait=wait
-    # )
+    cluster = spark_client.create_cluster(
+        cluster_conf,
+        wait=wait
+    )
 
     spinner.stop()
 
-    # if wait:
-    #     log.info("Cluster %s created successfully.", cluster.id)
-    # else:
-    #     log.info("Cluster %s is being provisioned.", cluster.id)
+    if wait:
+        log.info("Cluster %s created successfully.", cluster.id)
+    else:
+        log.info("Cluster %s is being provisioned.", cluster.id)
 
 
 def print_cluster_conf(cluster_conf: ClusterConfiguration, wait: bool):

@@ -11,6 +11,7 @@ from aztk.utils import helpers
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
+from aztk.spark.models import ClusterConfiguration
 
 root = constants.ROOT_PATH
 
@@ -98,13 +99,15 @@ def __add_file_to_zip(zipf, file_path, zip_file_path, binary):
     zipf = zip_file_to_dir(file_path, zip_file_path, zipf, binary)
     return zipf
 
+
 def __add_str_to_zip(zipf, payload, zipf_file_path=None):
     if not payload:
         return zipf
     zipf.writestr(zipf_file_path, payload)
     return zipf
 
-def zip_scripts(blob_client, container_id, custom_scripts, spark_configuration, user_conf=None):
+
+def zip_scripts(blob_client, container_id, custom_scripts, spark_configuration, user_conf=None, plugins=None):
     zipf = __create_zip()
     if custom_scripts:
         zipf = __add_custom_scripts(zipf, custom_scripts)
@@ -119,6 +122,13 @@ def zip_scripts(blob_client, container_id, custom_scripts, spark_configuration, 
         if spark_configuration.jars:
             for jar in spark_configuration.jars:
                 zipf = __add_file_to_zip(zipf, jar, 'jars', binary=True)
+
+    if plugins:
+        for plugin in plugins:
+            for script in plugin.manifest().scripts:
+                zipf = __add_file_to_zip(zipf, script, 'plugins/{0}'.format(plugin.name), binary=False)
+
+            print("Abc")
 
     if user_conf:
         encrypted_aes_session_key, cipher_aes_nonce, tag, ciphertext = encrypt_password(spark_configuration.ssh_key_pair['pub_key'], user_conf.password)

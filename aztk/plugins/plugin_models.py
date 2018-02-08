@@ -24,7 +24,7 @@ class PluginRunTarget(Enum):
     All = 2,
 
 
-class PluginManifest:
+class PluginDefinition:
     """
     Plugin manifest that should be returned in the main.py of your plugin
     """

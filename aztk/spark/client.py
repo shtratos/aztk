@@ -22,6 +22,11 @@ class Client(BaseClient):
     '''
     def create_cluster(self, cluster_conf: models.ClusterConfiguration, wait: bool = False):
         cluster_conf.validate()
+        for plugin in cluster_conf.plugins:
+            if self.plugin_manager.has_plugin(plugin.name):
+                plugin.set_manifest(self.plugin_manager.get_plugin(plugin.name))
+            else:
+                raise error.AztkError("Cannot find a plugin with name '{0}'".format(plugin.name))
 
         if cluster_conf.user_configuration.username is not None and wait is False:
             raise error.AztkError(

@@ -1,6 +1,7 @@
 import os
 from aztk import error
 import importlib.util
+from aztk.plugins import PluginDefinition
 
 
 class PluginManager:
@@ -19,10 +20,10 @@ class PluginManager:
         """
         Load a plugin at the given path
         """
+        path = os.path.abspath(path)
         plugin_module = self._load_plugin_module(path)
         manifest = plugin_module.manifest()
-        self.plugins[manifest.name] = manifest
-        print("Entry", manifest.name)
+        self.plugins[manifest.name] = self._expand_definition(path, manifest)
 
     def _load_plugin_module(self, path: str):
         entry_file = self._get_entry_point(path)
@@ -40,9 +41,21 @@ class PluginManager:
             raise error.InvalidPluginDefinition(
                 "Plugin cannot be loaded. Path '{0}' doesn't contain an entry file {1}.".format(path, PluginManager.PluginEntryPoint))
 
-        return os.path.abspath(entry)
+        return entry
 
     def _validate_plugin_module(self, path, plugin_module):
         if not hasattr(plugin_module, "manifest"):
             raise error.InvalidPluginDefinition(
                 "Plugin cannot be loaded. Plugin '{0}' is missing a manifest function".format(path))
+
+
+    def _expand_definition(self, path: str, definition: PluginDefinition):
+        """
+
+        """
+        new_scripts = []
+        for script in definition.scripts:
+            new_scripts.append(os.path.join(path, script))
+        definition.scripts = new_scripts
+
+        return definition

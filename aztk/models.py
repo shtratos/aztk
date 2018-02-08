@@ -2,6 +2,7 @@ from typing import List
 from aztk import error
 import aztk.utils.constants as constants
 import azure.batch.models as batch_models
+from aztk.plugins import PluginManifest
 
 
 class ConfigurationBase:
@@ -70,9 +71,17 @@ class PluginConfiguration(ConfigurationBase):
     """
     Contains the configuration to use a plugin
     """
+
     def __init__(self, name, args: dict):
         self.name = name
         self.args = args
+        self._manifest = None
+
+    def set_manifest(self, manifest):
+        self._manifest = manifest
+
+    def manifest(self) -> PluginManifest:
+        return self._manifest
 
 
 class ClusterConfiguration(ConfigurationBase):
