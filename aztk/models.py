@@ -78,7 +78,7 @@ class PluginConfiguration(ConfigurationBase):
         self._definition = None
 
     def set_definition(self, definition):
-        self._manifest = definition
+        self._definition = definition
 
     def definition(self) -> PluginDefinition:
         return self._definition

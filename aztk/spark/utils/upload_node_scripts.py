@@ -170,9 +170,10 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
             zipf = __add_file_to_zip(zipf, file, 'plugins/{0}'.format(plugin.name), binary=False)
         if definition.execute:
             data.append(dict(
-                execute=plugin.execute,
+                execute='{0}/{1}'.format(plugin.name, definition.execute),
                 args=plugin.args,
-                runOn=definition.runOn,
+                runOn=definition.runOn.value,
             ))
 
-    zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data, default_flow_style=False))
+    zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data))
+    return zipf

@@ -48,7 +48,7 @@ def _setup_plugins(plugins_manifest, is_master=False, is_worker=False):
     for plugin in plugins_manifest:
         if _run_on_this_node(plugin, is_master, is_worker):
             path = os.path.join(plugins_dir, plugin['execute'])
-            _run_script(path, args)
+            _run_script(path, plugin.get('args'))
 
 
 def _run_script(script_path: str=None, args: dict = None):

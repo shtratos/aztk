@@ -53,9 +53,9 @@ class PluginManager:
         """
 
         """
-        new_scripts = []
-        for script in definition.scripts:
-            new_scripts.append(os.path.join(path, script))
-        definition.scripts = new_scripts
+        new_files = []
+        for file in definition.files:
+            new_files.append(os.path.join(path, file))
+        definition.files = new_files
 
         return definition

@@ -19,9 +19,9 @@ class PluginPort:
 
 
 class PluginRunTarget(Enum):
-    Master = 0,
-    Worker = 1,
-    All = 2,
+    Master = "master"
+    Worker = "worker"
+    All = "all-nodes"
 
 
 class PluginDefinition:
