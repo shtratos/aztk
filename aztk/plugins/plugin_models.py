@@ -27,16 +27,22 @@ class PluginRunTarget(Enum):
 class PluginDefinition:
     """
     Plugin manifest that should be returned in the main.py of your plugin
+    :param name: Name of the plugin. Used to reference the plugin
+    :param runOn: Where the plugin should run
+    :param files: List of files to upload
+    :param
     """
 
     def __init__(
             self,
             name: str,
             ports: List[PluginPort] = None,
-            scripts: List[str] = None,
-            runOn: PluginRunTarget = PluginRunTarget.Master,
-            docker_image: str = None):
+            files: List[str] = None,
+            execute: str = None,
+            runOn: PluginRunTarget = PluginRunTarget.Master):
         self.name = name
-        self.docker_image = docker_image
+        # self.docker_image = docker_image
+        self.runOn = runOn
         self.ports = ports or []
-        self.scripts = scripts or []
+        self.files = files or []
+        self.execute = execute

@@ -10,7 +10,8 @@ def definition():
                 local=8888,
             )
         ],
-        scripts=[
+        execute="jupyter.sh",
+        files=[
             "jupyter.sh",
-        ]
+        ],
     )

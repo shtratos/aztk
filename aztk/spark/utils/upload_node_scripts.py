@@ -5,13 +5,15 @@ import datetime
 import logging
 import zipfile
 import yaml
+import json
 from pathlib import Path
 from aztk.utils import constants
 from aztk.utils import helpers
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
-from aztk.spark.models import ClusterConfiguration
+from aztk.spark.models import ClusterConfiguration, PluginConfiguration
+from typing import List
 
 root = constants.ROOT_PATH
 
@@ -124,9 +126,7 @@ def zip_scripts(blob_client, container_id, custom_scripts, spark_configuration, 
                 zipf = __add_file_to_zip(zipf, jar, 'jars', binary=True)
 
     if plugins:
-        for plugin in plugins:
-            for script in plugin.definition().scripts:
-                zipf = __add_file_to_zip(zipf, script, 'plugins/{0}'.format(plugin.name), binary=False)
+        zipf = __add_plugins(zipf, plugins)
 
     if user_conf:
         encrypted_aes_session_key, cipher_aes_nonce, tag, ciphertext = encrypt_password(spark_configuration.ssh_key_pair['pub_key'], user_conf.password)
@@ -161,3 +161,18 @@ def encrypt_password(ssh_pub_key, password):
     cipher_aes = AES.new(session_key, AES.MODE_EAX)
     ciphertext, tag = cipher_aes.encrypt_and_digest(password.encode())
     return [encrypted_aes_session_key, cipher_aes.nonce, tag, ciphertext]
+
+def __add_plugins(zipf, plugins: List[PluginConfiguration]):
+    data = []
+    for plugin in plugins:
+        definition = plugin.definition()
+        for file in definition.files:
+            zipf = __add_file_to_zip(zipf, file, 'plugins/{0}'.format(plugin.name), binary=False)
+        if definition.execute:
+            data.append(dict(
+                execute=plugin.execute,
+                args=plugin.args,
+                runOn=definition.runOn,
+            ))
+
+    zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data, default_flow_style=False))
