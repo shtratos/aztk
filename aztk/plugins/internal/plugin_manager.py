@@ -7,7 +7,13 @@ class PluginManager:
     PluginEntryPoint = "main.py"
 
     def __init__(self):
-        self.plugins = []
+        self.plugins = dict()
+
+    def has_plugin(self, name: str):
+        return name in self.plugins
+
+    def get_plugin(self, name: str):
+        return self.plugins.get(name)
 
     def load_plugin(self, path: str):
         """
@@ -15,6 +21,7 @@ class PluginManager:
         """
         plugin_module = self._load_plugin_module(path)
         manifest = plugin_module.manifest()
+        self.plugins[manifest.name] = manifest
         print("Entry", manifest.name)
 
     def _load_plugin_module(self, path: str):

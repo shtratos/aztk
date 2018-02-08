@@ -66,7 +66,7 @@ class UserConfiguration(ConfigurationBase):
         ])
 
 
-class Plugin(ConfigurationBase):
+class PluginConfiguration(ConfigurationBase):
     """
     Contains the configuration to use a plugin
     """
@@ -90,7 +90,7 @@ class ClusterConfiguration(ConfigurationBase):
             vm_size=None,
             subnet_id=None,
             docker_repo: str=None,
-            plugins: List[Plugin] = None,
+            plugins: List[PluginConfiguration] = None,
             user_configuration: UserConfiguration=None):
         super().__init__()
         self.custom_scripts = custom_scripts
@@ -126,6 +126,8 @@ class ClusterConfiguration(ConfigurationBase):
                 self.user_configuration.merge(other.user_configuration)
             else:
                 self.user_configuration = other.user_configuration
+
+        self.plugins += other.plugins
 
     def mixed_mode(self) -> bool:
         return self.vm_count > 0 and self.vm_low_pri_count > 0

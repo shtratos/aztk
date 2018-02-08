@@ -3,7 +3,7 @@ import yaml
 import typing
 from cli import log
 import aztk.spark
-from aztk.spark.models import SecretsConfiguration, ServicePrincipalConfiguration, SharedKeyConfiguration, DockerConfiguration, ClusterConfiguration, UserConfiguration
+from aztk.spark.models import SecretsConfiguration, ServicePrincipalConfiguration, SharedKeyConfiguration, DockerConfiguration, ClusterConfiguration, UserConfiguration, PluginConfiguration
 
 
 def load_aztk_screts() -> SecretsConfiguration:
@@ -168,6 +168,12 @@ def cluster_config_from_dict(config: dict):
 
     if config.get('docker_repo') is not None:
         output.docker_repo = config['docker_repo']
+
+    if 'plugins' in config:
+        for plugin in config['plugins']:
+            name = plugin.get('name')
+            args = plugin.get('args', dict())
+            output.plugins.append(PluginConfiguration(name = name, args = args))
 
     if config.get('wait') is not None:
         wait = config['wait']

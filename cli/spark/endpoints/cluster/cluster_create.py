@@ -100,17 +100,17 @@ def execute(args: typing.NamedTuple):
     spinner.start()
 
     # create spark cluster
-    cluster = spark_client.create_cluster(
-        cluster_conf,
-        wait=wait
-    )
+    # cluster = spark_client.create_cluster(
+    #     cluster_conf,
+    #     wait=wait
+    # )
 
     spinner.stop()
 
-    if wait:
-        log.info("Cluster %s created successfully.", cluster.id)
-    else:
-        log.info("Cluster %s is being provisioned.", cluster.id)
+    # if wait:
+    #     log.info("Cluster %s created successfully.", cluster.id)
+    # else:
+    #     log.info("Cluster %s is being provisioned.", cluster.id)
 
 
 def print_cluster_conf(cluster_conf: ClusterConfiguration, wait: bool):
@@ -131,4 +131,11 @@ def print_cluster_conf(cluster_conf: ClusterConfiguration, wait: bool):
     log.info("username:                %s", user_configuration.username)
     if user_configuration.password:
         log.info("Password: %s", '*' * len(user_configuration.password))
+    log.info("Plugins:")
+    if len(cluster_conf.plugins) == 0:
+        log.info("    None Configured")
+    else:
+        for plugin in cluster_conf.plugins:
+            args = ", ".join([ "{0}: {1}".format(k, v) for [k, v] in plugin.args.items()])
+            log.info("  - %s: (%s)", plugin.name, args)
     log.info("-------------------------------------------")
