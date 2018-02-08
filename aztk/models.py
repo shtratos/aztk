@@ -9,6 +9,7 @@ class ConfigurationBase:
     Base class for any configuration.
     Include methods to help with validation
     """
+
     def validate(self):
         raise NotImplementedError("Validate not implemented")
 
@@ -30,6 +31,7 @@ class ConfigurationBase:
             val = getattr(other, attr)
             if val is not None:
                 setattr(self, attr, val)
+
 
 class FileShare:
     def __init__(self,
@@ -63,10 +65,21 @@ class UserConfiguration(ConfigurationBase):
             "password",
         ])
 
+
+class Plugin(ConfigurationBase):
+    """
+    Contains the configuration to use a plugin
+    """
+    def __init__(self, name, args: dict):
+        self.name = name
+        self.args = args
+
+
 class ClusterConfiguration(ConfigurationBase):
     """
     Cluster configuration model
     """
+
     def __init__(
             self,
             custom_scripts: List[CustomScript] = None,
@@ -77,6 +90,7 @@ class ClusterConfiguration(ConfigurationBase):
             vm_size=None,
             subnet_id=None,
             docker_repo: str=None,
+            plugins: List[Plugin] = None,
             user_configuration: UserConfiguration=None):
         super().__init__()
         self.custom_scripts = custom_scripts
@@ -88,6 +102,7 @@ class ClusterConfiguration(ConfigurationBase):
         self.subnet_id = subnet_id
         self.docker_repo = docker_repo
         self.user_configuration = user_configuration
+        self.plugins = plugins or []
 
     def merge(self, other):
         """
@@ -282,10 +297,12 @@ class Cluster:
         self.target_dedicated_nodes = pool.target_dedicated_nodes
         self.target_low_pri_nodes = pool.target_low_priority_nodes
 
+
 class SSHLog():
     def __init__(self, output, node_id):
         self.output = output
         self.node_id = node_id
+
 
 class Software:
     """
