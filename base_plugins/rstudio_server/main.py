@@ -22,6 +22,4 @@ def definition():
 
 
 def validate_args(version: str = "1.1.383"):
-    if version == "1.2.3":
-        raise InvalidPluginConfigurationError("RStudio version is invalid")
     return True
