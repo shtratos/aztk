@@ -194,7 +194,7 @@ def ssh_in_master(
                 "-L", "{0}:localhost:{1}".format(port[0], port[1]))
     if cluster.configuration and cluster.configuration.plugins:
         for plugin in cluster.configuration.plugins:
-            for port in plugin.definition().ports:
+            for port in plugin.definition.ports:
                 ssh_command.add_option("-L", "{0}:localhost:{1}".format(port.local, port.remote))
 
     user = username if username is not None else '<username>'

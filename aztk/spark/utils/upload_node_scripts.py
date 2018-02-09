@@ -165,7 +165,7 @@ def encrypt_password(ssh_pub_key, password):
 def __add_plugins(zipf, plugins: List[PluginConfiguration]):
     data = []
     for plugin in plugins:
-        definition = plugin.definition()
+        definition = plugin.definition
         for file in definition.files:
             zipf = __add_file_to_zip(zipf, file, 'plugins/{0}'.format(plugin.name), binary=False)
         if definition.execute:
