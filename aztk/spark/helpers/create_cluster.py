@@ -186,9 +186,7 @@ def generate_cluster_start_task(
     resource_files = [zip_resource_file]
     spark_web_ui_port = constants.DOCKER_SPARK_WEB_UI_PORT
     spark_worker_ui_port = constants.DOCKER_SPARK_WORKER_UI_PORT
-    spark_jupyter_port = constants.DOCKER_SPARK_JUPYTER_PORT
     spark_job_ui_port = constants.DOCKER_SPARK_JOB_UI_PORT
-    spark_rstudio_server_port = constants.DOCKER_SPARK_RSTUDIO_SERVER_PORT
 
     spark_container_name = constants.DOCKER_SPARK_CONTAINER_NAME
     spark_submit_logs_file = constants.SPARK_SUBMIT_LOGS_FILE
@@ -200,15 +198,11 @@ def generate_cluster_start_task(
         batch_models.EnvironmentSetting(
             name="SPARK_WORKER_UI_PORT", value=spark_worker_ui_port),
         batch_models.EnvironmentSetting(
-            name="SPARK_JUPYTER_PORT", value=spark_jupyter_port),
-        batch_models.EnvironmentSetting(
             name="SPARK_JOB_UI_PORT", value=spark_job_ui_port),
         batch_models.EnvironmentSetting(
             name="SPARK_CONTAINER_NAME", value=spark_container_name),
         batch_models.EnvironmentSetting(
             name="SPARK_SUBMIT_LOGS_FILE", value=spark_submit_logs_file),
-        batch_models.EnvironmentSetting(
-            name="SPARK_RSTUDIO_SERVER_PORT", value=spark_rstudio_server_port),
     ] + __get_docker_credentials(spark_client)
 
     # start task command

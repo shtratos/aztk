@@ -65,8 +65,6 @@ def execute(args: typing.NamedTuple):
              ssh_conf.job_history_ui_port)
     log.info("open namenodeui:     %s%s",
              http_prefix, ssh_conf.name_node_ui_port)
-    log.info("open rstudio server: %s%s", http_prefix,
-             ssh_conf.rstudio_server_port)
     print_plugin_ports(cluster)
     log.info("ssh username:        %s", ssh_conf.username)
     log.info("connect:             %s", ssh_conf.connect)
@@ -81,7 +79,6 @@ def execute(args: typing.NamedTuple):
             jobui=ssh_conf.job_ui_port,
             jobhistoryui=ssh_conf.job_history_ui_port,
             namenodeui=ssh_conf.name_node_ui_port,
-            rstudioserver=ssh_conf.rstudio_server_port,
             username=ssh_conf.username,
             host=ssh_conf.host,
             connect=ssh_conf.connect)

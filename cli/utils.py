@@ -133,7 +133,6 @@ def ssh_in_master(
         jobui: str = None,
         jobhistoryui: str = None,
         namenodeui: str = None,
-        rstudioserver: str = None,
         ports=None,
         host: bool = False,
         connect: bool = True):
@@ -143,8 +142,6 @@ def ssh_in_master(
         :param username: Username to use to ssh
         :param webui: Port for the spark master web ui (Local port)
         :param jobui: Port for the job web ui (Local port)
-        :param jupyter: Port for jupyter (Local port)
-        :param rstudioserver: Port for rstudio server (Local port)
         :param ports: an list of local and remote ports
         :type ports: [[<local-port>, <remote-port>]]
     """
@@ -163,8 +160,6 @@ def ssh_in_master(
 
     spark_web_ui_port = aztk.utils.constants.DOCKER_SPARK_WEB_UI_PORT
     spark_worker_ui_port = aztk.utils.constants.DOCKER_SPARK_WORKER_UI_PORT
-    spark_rstudio_server_port = aztk.utils.constants.DOCKER_SPARK_RSTUDIO_SERVER_PORT
-    spark_jupyter_port = aztk.utils.constants.DOCKER_SPARK_JUPYTER_PORT
     spark_job_ui_port = aztk.utils.constants.DOCKER_SPARK_JOB_UI_PORT
     spark_job_history_ui_port = aztk.utils.constants.DOCKER_SPARK_JOB_UI_HISTORY_PORT
     spark_namenode_ui_port = aztk.utils.constants.DOCKER_SPARK_NAMENODE_UI_PORT
@@ -185,8 +180,6 @@ def ssh_in_master(
         jobhistoryui, spark_job_history_ui_port), enable=bool(jobui))
     ssh_command.add_option("-L", "{0}:localhost:{1}".format(
         namenodeui, spark_namenode_ui_port), enable=bool(namenodeui))
-    ssh_command.add_option("-L", "{0}:localhost:{1}".format(
-        rstudioserver, spark_rstudio_server_port), enable=bool(rstudioserver))
 
     if ports is not None:
         for port in ports:
