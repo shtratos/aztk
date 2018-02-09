@@ -10,6 +10,13 @@ class PluginManager:
 
     def __init__(self):
         self.plugins = dict()
+        self.loaded = False
+
+    def load(self):
+        if self.loaded:
+            return
+        self.load_all_plugins(os.path.join(utils.constants.ROOT_PATH, "base_plugins"))
+        self.loaded = True
 
     def has_plugin(self, name: str):
         return name in self.plugins
@@ -67,4 +74,4 @@ class PluginManager:
         return definition
 
 plugin_manager = PluginManager()
-plugin_manager.load_all_plugins(os.path.join(utils.constants.ROOT_PATH, "base_plugins"))
+plugin_manager.load()

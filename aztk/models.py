@@ -49,13 +49,13 @@ class PluginConfiguration(ConfigurationBase):
     """
     Contains the configuration to use a plugin
     """
-    def __init__(self, name, args: dict):
+    def __init__(self, name, args: dict = None):
         self.name = name
         self.args = args or dict()
         if plugin_manager.has_plugin(self.name):
             self.definition = plugin_manager.get_plugin(self.name).definition
 
-    def plugin():
+    def plugin(self):
         return plugin_manager.get_plugin(self.name)
 
     def validate(self) -> bool:
@@ -65,6 +65,7 @@ class PluginConfiguration(ConfigurationBase):
         if not self.definition:
             raise error.AztkError(
                 "Cannot find a plugin with name '{0}'".format(self.name))
+        self.plugin().validate_args(self.args)
 
 
 class ClusterConfiguration(ConfigurationBase):
@@ -118,6 +119,10 @@ class ClusterConfiguration(ConfigurationBase):
                 self.user_configuration.merge(other.user_configuration)
             else:
                 self.user_configuration = other.user_configuration
+
+        if self.plugins:
+            for plugin in self.plugins:
+                plugin.validate()
 
     def mixed_mode(self) -> bool:
         return self.vm_count > 0 and self.vm_low_pri_count > 0
