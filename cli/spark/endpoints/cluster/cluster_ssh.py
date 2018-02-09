@@ -5,6 +5,7 @@ from cli import utils, config
 from cli.config import SshConfig
 import aztk
 import azure.batch.models.batch_error as batch_error
+from aztk.models import ClusterConfiguration
 
 
 def setup_parser(parser: argparse.ArgumentParser):
@@ -35,6 +36,9 @@ def setup_parser(parser: argparse.ArgumentParser):
     parser.set_defaults(connect=True)
 
 
+http_prefix = 'http://localhost:'
+
+
 def execute(args: typing.NamedTuple):
     spark_client = aztk.spark.Client(config.load_aztk_screts())
     cluster = spark_client.get_cluster(args.cluster_id)
@@ -53,31 +57,21 @@ def execute(args: typing.NamedTuple):
         connect=args.connect
     )
 
-    http_prefix = 'http://localhost:'
     log.info("-------------------------------------------")
     log.info("spark cluster id:    %s", ssh_conf.cluster_id)
     log.info("open webui:          %s%s", http_prefix, ssh_conf.web_ui_port)
     log.info("open jobui:          %s%s", http_prefix, ssh_conf.job_ui_port)
-    log.info("open jobhistoryui:   %s%s", http_prefix, ssh_conf.job_history_ui_port)
-    log.info("open namenodeui:     %s%s", http_prefix, ssh_conf.name_node_ui_port)
-    log.info("open rstudio server: %s%s", http_prefix, ssh_conf.rstudio_server_port)
+    log.info("open jobhistoryui:   %s%s", http_prefix,
+             ssh_conf.job_history_ui_port)
+    log.info("open namenodeui:     %s%s",
+             http_prefix, ssh_conf.name_node_ui_port)
+    log.info("open rstudio server: %s%s", http_prefix,
+             ssh_conf.rstudio_server_port)
     log.info("ssh username:        %s", ssh_conf.username)
     log.info("connect:             %s", ssh_conf.connect)
     log.info("-------------------------------------------")
 
-    if cluster.configuration and cluster.configuration.plugins:
-        plugins =  cluster.configuration.plugins
-        has_ports = False
-        for plugin in plugins:
-            for port in plugin.definition().ports:
-                has_ports = True
-                break
-
-        if has_ports > 0:
-            log.info("Plugins:")
-            for plugin in plugins:
-                for port in plugin.definition().ports:
-                    log.info("  - open %s: %s%s", plugin.name, http_prefix, port.local)
+    print_plugin_ports(cluster)
 
     # get ssh command
     try:
@@ -95,11 +89,31 @@ def execute(args: typing.NamedTuple):
 
         if not ssh_conf.connect:
             log.info("")
-            log.info("Use the following command to connect to your spark head node:")
+            log.info(
+                "Use the following command to connect to your spark head node:")
             log.info("\t%s", ssh_cmd)
 
     except batch_error.BatchErrorException as e:
         if e.error.code == "PoolNotFound":
-            raise aztk.error.AztkError("The cluster you are trying to connect to does not exist.")
+            raise aztk.error.AztkError(
+                "The cluster you are trying to connect to does not exist.")
         else:
             raise
+
+
+def print_plugin_ports(cluster: ClusterConfiguration):
+
+    if cluster.configuration and cluster.configuration.plugins:
+        plugins = cluster.configuration.plugins
+        has_ports = False
+        for plugin in plugins:
+            for port in plugin.definition().ports:
+                has_ports = True
+                break
+
+        if has_ports > 0:
+            log.info("Plugins:")
+            for plugin in plugins:
+                for port in plugin.definition().ports:
+                    log.info("  - open %s %s: %s%s", plugin.name, port.name,
+                             http_prefix, port.local)

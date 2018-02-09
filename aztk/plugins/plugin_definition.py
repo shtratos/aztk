@@ -7,15 +7,18 @@ class PluginPort:
         Definition for a port that should be opened on node
         :param remote: Port on the node
         :param local: Port available to the user
+        :param name: Optional name to differentiate ports if you have multiple
     """
 
     def __init__(
             self,
             remote: int,
-            local: int):
+            local: int,
+            name = None):
 
         self.remote = remote
         self.local = local
+        self.name = name
 
 
 class PluginRunTarget(Enum):

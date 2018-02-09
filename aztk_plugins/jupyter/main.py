@@ -6,9 +6,9 @@ def definition():
         name="jupyter",
         ports=[
             PluginPort(
-             remote=8888,
+                remote=8888,
                 local=8888,
-            )
+            ),
         ],
         runOn=PluginRunTarget.All,
         execute="jupyter.sh",
@@ -16,4 +16,3 @@ def definition():
             "jupyter.sh",
         ],
     )
-
