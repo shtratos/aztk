@@ -1,6 +1,7 @@
 from aztk.plugins import PluginDefinition, PluginPort, PluginRunTarget
 from aztk.error import InvalidPluginConfigurationError
 
+
 def definition():
     return PluginDefinition(
         name="rstudio_server",
@@ -23,3 +24,9 @@ def definition():
 
 def validate_args(version: str):
     return True
+
+
+def process_args(version: str):
+    return dict(
+        RSTUDIO_SERVER_VERSION=version
+    )

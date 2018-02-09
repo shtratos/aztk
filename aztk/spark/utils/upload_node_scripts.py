@@ -173,7 +173,7 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
         if definition.execute:
             data.append(dict(
                 execute='{0}/{1}'.format(plugin.name, definition.execute),
-                args=plugin.args,
+                args=plugin.process_args(plugin_conf.args),
                 runOn=definition.runOn.value,
             ))
 
