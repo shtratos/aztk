@@ -23,6 +23,9 @@ class PluginManager:
         path = os.path.abspath(path)
         plugin_module = self._load_plugin_module(path)
         definition = plugin_module.definition()
+        if type(definition) is not PluginDefinition:
+            raise error.InvalidPluginDefinition("Plugin {0} definition method doesn't return a PluginDefinition object".format(path))
+
         self.plugins[definition.name] = self._expand_definition(path, definition)
 
     def _load_plugin_module(self, path: str):
