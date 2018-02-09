@@ -72,6 +72,7 @@ def execute(args: typing.NamedTuple):
     log.info("-------------------------------------------")
 
     print_plugin_ports(cluster)
+    log.info("-------------------------------------------")
 
     # get ssh command
     try:
@@ -115,5 +116,5 @@ def print_plugin_ports(cluster: ClusterConfiguration):
             log.info("Plugins:")
             for plugin in plugins:
                 for port in plugin.definition.ports:
-                    log.info("  - open %s %s: %s%s", plugin.name, port.name,
+                    log.info("  - open %s %s: %s%s", plugin.name, port.name or '',
                              http_prefix, port.local)
