@@ -12,15 +12,15 @@ def load_aztk_screts() -> SecretsConfiguration:
     """
     secrets = SecretsConfiguration()
     # read global ~/secrets.yaml
-    global_config = _load_secrets_config(os.path.join(
-        aztk.utils.constants.HOME_DIRECTORY_PATH, '.aztk', 'secrets.yaml'))
+    global_config = _load_secrets_config(
+        os.path.join(aztk.utils.constants.HOME_DIRECTORY_PATH, '.aztk', 'secrets.yaml'))
     # read current working directory secrets.yaml
     local_config = _load_secrets_config()
 
     if not global_config and not local_config:
         raise "There is no secrets.yaml in either ./.aztk/secrets.yaml or .aztk/secrets.yaml"
 
-    if global_config:  # GLobal config is optional
+    if global_config:    # GLobal config is optional
         _merge_secrets_dict(secrets, global_config)
     if local_config:
         _merge_secrets_dict(secrets, local_config)
@@ -41,8 +41,7 @@ def _load_secrets_config(path: str = aztk.utils.constants.DEFAULT_SECRETS_PATH):
         try:
             return yaml.load(stream)
         except yaml.YAMLError as err:
-            raise aztk.error.AztkError(
-                "Error in secrets.yaml: {0}".format(err))
+            raise aztk.error.AztkError("Error in secrets.yaml: {0}".format(err))
 
 
 def _merge_secrets_dict(secrets: SecretsConfiguration, secrets_config):
@@ -52,10 +51,8 @@ def _merge_secrets_dict(secrets: SecretsConfiguration, secrets_config):
             tenant_id=service_principal_config.get('tenant_id'),
             client_id=service_principal_config.get('client_id'),
             credential=service_principal_config.get('credential'),
-            batch_account_resource_id=service_principal_config.get(
-                'batch_account_resource_id'),
-            storage_account_resource_id=service_principal_config.get(
-                'storage_account_resource_id'),
+            batch_account_resource_id=service_principal_config.get('batch_account_resource_id'),
+            storage_account_resource_id=service_principal_config.get('storage_account_resource_id'),
         )
 
     shared_key_config = secrets_config.get('shared_key')
@@ -71,32 +68,24 @@ def _merge_secrets_dict(secrets: SecretsConfiguration, secrets_config):
             batch_account_name=shared_key_config.get('batch_account_name'),
             batch_account_key=shared_key_config.get('batch_account_key'),
             batch_service_url=shared_key_config.get('batch_service_url'),
-            storage_account_name=shared_key_config.get(
-                'storage_account_name'),
-            storage_account_key=shared_key_config.get(
-                'storage_account_key'),
-            storage_account_suffix=shared_key_config.get(
-                'storage_account_suffix'),
+            storage_account_name=shared_key_config.get('storage_account_name'),
+            storage_account_key=shared_key_config.get('storage_account_key'),
+            storage_account_suffix=shared_key_config.get('storage_account_suffix'),
         )
     elif batch or storage:
         secrets.shared_key = SharedKeyConfiguration()
         if batch:
             log.warning(
-                "Your secrets.yaml format is deprecated. To use shared key authentication use the shared_key key. See config/secrets.yaml.template")
-            secrets.shared_key.batch_account_name = batch.get(
-                'batchaccountname')
-            secrets.shared_key.batch_account_key = batch.get(
-                'batchaccountkey')
-            secrets.shared_key.batch_service_url = batch.get(
-                'batchserviceurl')
+                "Your secrets.yaml format is deprecated. To use shared key authentication use the shared_key key. See config/secrets.yaml.template"
+            )
+            secrets.shared_key.batch_account_name = batch.get('batchaccountname')
+            secrets.shared_key.batch_account_key = batch.get('batchaccountkey')
+            secrets.shared_key.batch_service_url = batch.get('batchserviceurl')
 
         if storage:
-            secrets.shared_key.storage_account_name = storage.get(
-                'storageaccountname')
-            secrets.shared_key.storage_account_key = storage.get(
-                'storageaccountkey')
-            secrets.shared_key.storage_account_suffix = storage.get(
-                'storageaccountsuffix')
+            secrets.shared_key.storage_account_name = storage.get('storageaccountname')
+            secrets.shared_key.storage_account_key = storage.get('storageaccountkey')
+            secrets.shared_key.storage_account_suffix = storage.get('storageaccountsuffix')
 
     docker_config = secrets_config.get('docker')
     if docker_config:
@@ -124,8 +113,7 @@ def read_cluster_config(path: str = aztk.utils.constants.DEFAULT_CLUSTER_CONFIG_
         try:
             config_dict = yaml.load(stream)
         except yaml.YAMLError as err:
-            raise aztk.error.AztkError(
-                "Error in cluster.yaml: {0}".format(err))
+            raise aztk.error.AztkError("Error in cluster.yaml: {0}".format(err))
 
         if config_dict is None:
             return
@@ -154,9 +142,7 @@ def cluster_config_from_dict(config: dict):
         output.subnet_id = config['subnet_id']
 
     if config.get('username') is not None:
-        output.user_configuration = UserConfiguration(
-            username=config['username']
-        )
+        output.user_configuration = UserConfiguration(username=config['username'])
 
         if config.get('password') is not None:
             output.user_configuration.password = config['password']
@@ -165,11 +151,7 @@ def cluster_config_from_dict(config: dict):
         output.custom_scripts = []
         for custom_script in config['custom_scripts']:
             output.custom_scripts.append(
-                aztk.spark.models.CustomScript(
-                    script=custom_script['script'],
-                    run_on=custom_script['runOn']
-                )
-            )
+                aztk.spark.models.CustomScript(script=custom_script['script'], run_on=custom_script['runOn']))
 
     if config.get('azure_files') not in [[None], None]:
         output.file_shares = []
@@ -180,17 +162,16 @@ def cluster_config_from_dict(config: dict):
                     storage_account_key=file_share['storage_account_key'],
                     file_share_path=file_share['file_share_path'],
                     mount_path=file_share['mount_path'],
-                )
-            )
+                ))
 
     if config.get('docker_repo') is not None:
         output.docker_repo = config['docker_repo']
 
-    if 'plugins' in config:
+    if config.get('plugins') not in [[None], None]:
         for plugin in config['plugins']:
             name = plugin.get('name')
             args = plugin.get('args', dict())
-            output.plugins.append(PluginConfiguration(name = name, args = args))
+            output.plugins.append(PluginConfiguration(name=name, args=args))
 
     if config.get('wait') is not None:
         wait = config['wait']
@@ -199,7 +180,6 @@ def cluster_config_from_dict(config: dict):
 
 
 class SshConfig:
-
     def __init__(self):
         self.username = None
         self.cluster_id = None
@@ -225,8 +205,7 @@ class SshConfig:
             try:
                 config = yaml.load(stream)
             except yaml.YAMLError as err:
-                raise aztk.error.AztkError(
-                    "Error in ssh.yaml: {0}".format(err))
+                raise aztk.error.AztkError("Error in ssh.yaml: {0}".format(err))
 
             if config is None:
                 return
@@ -264,7 +243,8 @@ class SshConfig:
         if config.get('connect') is not None:
             self.connect = config['connect']
 
-    def merge(self, cluster_id, username, job_ui_port, job_history_ui_port, web_ui_port, jupyter_port, name_node_ui_port, rstudio_server_port, host, connect):
+    def merge(self, cluster_id, username, job_ui_port, job_history_ui_port, web_ui_port, jupyter_port,
+              name_node_ui_port, rstudio_server_port, host, connect):
         """
             Merges fields with args object
         """
@@ -281,13 +261,12 @@ class SshConfig:
                 name_node_ui_port=name_node_ui_port,
                 rstudio_server_port=rstudio_server_port,
                 host=host,
-                connect=connect
-            )
-        )
+                connect=connect))
 
         if self.cluster_id is None:
             raise aztk.error.AztkError(
-                "Please supply an id for the cluster either in the ssh.yaml configuration file or with a parameter (--id)")
+                "Please supply an id for the cluster either in the ssh.yaml configuration file or with a parameter (--id)"
+            )
 
         if self.username is None:
             raise aztk.error.AztkError(
@@ -351,8 +330,7 @@ class JobConfig():
             try:
                 config = yaml.load(stream)
             except yaml.YAMLError as err:
-                raise aztk.error.AztkError(
-                    "Error in job.yaml: {0}".format(err))
+                raise aztk.error.AztkError("Error in job.yaml: {0}".format(err))
 
             if config is None:
                 return
@@ -371,8 +349,7 @@ class JobConfig():
                 raise aztk.error.AztkError(
                     "Application specified with no name. Please verify your configuration in job.yaml")
             if entry['application'] is None:
-                raise aztk.error.AztkError(
-                    "No path to application specified for {} in job.yaml".format(entry['name']))
+                raise aztk.error.AztkError("No path to application specified for {} in job.yaml".format(entry['name']))
 
 
 def get_file_if_exists(file):
@@ -400,16 +377,14 @@ def load_jars():
 
     # try load global
     try:
-        jars_src = os.path.join(
-            aztk.utils.constants.GLOBAL_CONFIG_PATH, 'jars')
+        jars_src = os.path.join(aztk.utils.constants.GLOBAL_CONFIG_PATH, 'jars')
         jars = [os.path.join(jars_src, jar) for jar in os.listdir(jars_src)]
     except FileNotFoundError:
         pass
 
     # try load local, overwrite if found
     try:
-        jars_src = os.path.join(
-            aztk.utils.constants.DEFAULT_SPARK_CONF_SOURCE, 'jars')
+        jars_src = os.path.join(aztk.utils.constants.DEFAULT_SPARK_CONF_SOURCE, 'jars')
         jars = [os.path.join(jars_src, jar) for jar in os.listdir(jars_src)]
     except FileNotFoundError:
         pass
