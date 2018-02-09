@@ -16,10 +16,10 @@ def definition():
             "rstudio_server.sh",
         ],
         args=[
-            "version",
+            ("version", "1.1.383"),
         ],
     )
 
 
-def validate_args(version: str = "1.1.383"):
+def validate_args(version: str):
     return True

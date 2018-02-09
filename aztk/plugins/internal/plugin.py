@@ -17,14 +17,19 @@ class Plugin:
                 format(path))
         self.name = self.definition.name
 
+
     def validate_args(self, args: dict):
         """
         Validate the given args are valid for the plugin
         """
-        for arg, v in args.items():
-            if arg not in self.definition.args:
-                message = "Plugin {0} doesn't have an argument called '{1}'".format(self.name, arg)
-                raise InvalidPluginConfigurationError(message, self.definition)
+        self._validate_no_extra_args(args)
+
+        for arg in self.definition.args:
+            if args.get(arg.name) is None:
+                if arg.required:
+                    message = "Missing a required argument {0} for plugin {1}".format(arg.name, self.name)
+                    raise InvalidPluginConfigurationError(message)
+                args[arg.name] = arg.default
 
         if hasattr(self.module, "validate_args"):
             try:
@@ -33,3 +38,9 @@ class Plugin:
                 if e.pluginDefinition is None:
                     e.pluginDefinition = self.definition
                 raise e
+
+    def _validate_no_extra_args(self, args: dict):
+        for arg, v in args.items():
+            if not self.definition.has_arg(arg):
+                message = "Plugin {0} doesn't have an argument called '{1}'".format(self.name, arg)
+                raise InvalidPluginConfigurationError(message, self.definition)
