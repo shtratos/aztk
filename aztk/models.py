@@ -53,7 +53,10 @@ class PluginConfiguration(ConfigurationBase):
         self.name = name
         self.args = args or dict()
         if plugin_manager.has_plugin(self.name):
-            self.definition = plugin_manager.get_plugin(self.name)
+            self.definition = plugin_manager.get_plugin(self.name).definition
+
+    def plugin():
+        return plugin_manager.get_plugin(self.name)
 
     def validate(self) -> bool:
         if not self.name:

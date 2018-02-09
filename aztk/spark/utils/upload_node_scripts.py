@@ -164,10 +164,12 @@ def encrypt_password(ssh_pub_key, password):
 
 def __add_plugins(zipf, plugins: List[PluginConfiguration]):
     data = []
-    for plugin in plugins:
+    for plugin_conf in plugins:
+        plugin = plugin_conf.plugin()
         definition = plugin.definition
         for file in definition.files:
-            zipf = __add_file_to_zip(zipf, file, 'plugins/{0}'.format(plugin.name), binary=False)
+            filePath = plugin.path.join(plugin.path, file)
+            zipf = __add_file_to_zip(zipf, filePath, 'plugins/{0}'.format(plugin.name), binary=False)
         if definition.execute:
             data.append(dict(
                 execute='{0}/{1}'.format(plugin.name, definition.execute),
