@@ -54,32 +54,6 @@ def execute(args: typing.NamedTuple):
         docker_repo=args.docker_repo))
     wait = wait if args.wait is None else args.wait
 
-    if cluster_conf.custom_scripts:
-        custom_scripts = []
-        for custom_script in cluster_conf.custom_scripts:
-            custom_scripts.append(
-                aztk.spark.models.CustomScript(
-                    script=custom_script['script'],
-                    run_on=custom_script['runOn']
-                )
-            )
-    else:
-        custom_scripts = None
-
-    if cluster_conf.file_shares:
-        file_shares = []
-        for file_share in cluster_conf.file_shares:
-            file_shares.append(
-                aztk.spark.models.FileShare(
-                    storage_account_name=file_share['storage_account_name'],
-                    storage_account_key=file_share['storage_account_key'],
-                    file_share_path=file_share['file_share_path'],
-                    mount_path=file_share['mount_path']
-                )
-            )
-    else:
-        file_shares = None
-
     user_configuration = cluster_conf.user_configuration
 
     if user_configuration and user_configuration.username:
