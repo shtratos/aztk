@@ -42,10 +42,12 @@ class PluginDefinition:
             ports: List[PluginPort] = None,
             files: List[str] = None,
             execute: str = None,
+            args= None,
             runOn: PluginRunTarget = PluginRunTarget.Master):
         self.name = name
         # self.docker_image = docker_image
         self.runOn = runOn
         self.ports = ports or []
         self.files = files or []
+        self.args = args or []
         self.execute = execute

@@ -2,6 +2,7 @@ import os
 from aztk import error, utils
 import importlib.util
 from aztk.plugins import PluginDefinition
+from .plugin import Plugin
 
 
 class PluginManager:
@@ -22,11 +23,9 @@ class PluginManager:
         """
         path = os.path.abspath(path)
         plugin_module = self._load_plugin_module(path)
-        definition = plugin_module.definition()
-        if type(definition) is not PluginDefinition:
-            raise error.InvalidPluginDefinition("Plugin {0} definition method doesn't return a PluginDefinition object".format(path))
+        plugin = Plugin(path, plugin_module)
 
-        self.plugins[definition.name] = self._expand_definition(path, definition)
+        self.plugins[plugin.name] = plugin
 
     def load_all_plugins(self, directory: str):
         for folder in os.listdir(directory):
