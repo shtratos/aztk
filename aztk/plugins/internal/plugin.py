@@ -39,9 +39,9 @@ class Plugin:
                     e.pluginDefinition = self.definition
                 raise e
 
-    def process_args(self):
+    def process_args(self, args: dict):
         if hasattr(self.module, "process_args"):
-            return self.process_args(**args)
+            return self.module.process_args(**args)
         else:
             return args
 

@@ -168,7 +168,7 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
         plugin = plugin_conf.plugin()
         definition = plugin.definition
         for file in definition.files:
-            filePath = plugin.path.join(plugin.path, file)
+            filePath = os.path.join(plugin.path, file)
             zipf = __add_file_to_zip(zipf, filePath, 'plugins/{0}'.format(plugin.name), binary=False)
         if definition.execute:
             data.append(dict(
