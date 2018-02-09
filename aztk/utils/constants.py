@@ -72,5 +72,7 @@ WAIT_FOR_MASTER_TIMEOUT = 60 * 20
 
 AZTK_SOFTWARE_METADATA_KEY = "_aztk_software"
 
+AZTK_CLUSTER_CONFIG_METADATA_KEY = "_aztk_cluster_config"
+
 TASK_WORKING_DIR = "wd"
 SPARK_SUBMIT_LOGS_FILE = "output.log"

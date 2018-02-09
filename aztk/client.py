@@ -1,6 +1,7 @@
 import asyncio
 import concurrent.futures
 import sys
+import yaml
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
@@ -57,7 +58,7 @@ class Client:
 
         return job_exists or pool_exists
 
-    def __create_pool_and_job(self, cluster_conf, software_metadata_key: str, start_task, VmImageModel):
+    def __create_pool_and_job(self, cluster_conf: models.ClusterConfiguration, software_metadata_key: str, start_task, VmImageModel):
         """
             Create a pool and job
             :param cluster_conf: the configuration object used to create the cluster
@@ -100,6 +101,8 @@ class Client:
             metadata=[
                 batch_models.MetadataItem(
                     name=constants.AZTK_SOFTWARE_METADATA_KEY, value=software_metadata_key),
+                batch_models.MetadataItem(
+                    name=constants.AZTK_CLUSTER_CONFIG_METADATA_KEY, value=yaml.dump(cluster_conf)),
             ])
 
         # Create the pool + create user for the pool
