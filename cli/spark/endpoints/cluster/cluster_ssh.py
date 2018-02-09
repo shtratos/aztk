@@ -67,11 +67,9 @@ def execute(args: typing.NamedTuple):
              http_prefix, ssh_conf.name_node_ui_port)
     log.info("open rstudio server: %s%s", http_prefix,
              ssh_conf.rstudio_server_port)
+    print_plugin_ports(cluster)
     log.info("ssh username:        %s", ssh_conf.username)
     log.info("connect:             %s", ssh_conf.connect)
-    log.info("-------------------------------------------")
-
-    print_plugin_ports(cluster)
     log.info("-------------------------------------------")
 
     # get ssh command
