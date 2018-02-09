@@ -26,8 +26,7 @@ class Client:
         azure_api.validate_secrets(secrets_config)
         self.batch_client = azure_api.make_batch_client(secrets_config)
         self.blob_client = azure_api.make_blob_client(secrets_config)
-        self.plugin_manager = PluginManager()
-        self.plugin_manager.load_plugin("./aztk_plugins/jupyter")
+
 
     '''
     General Batch Operations

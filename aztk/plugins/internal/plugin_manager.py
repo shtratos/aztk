@@ -1,5 +1,5 @@
 import os
-from aztk import error
+from aztk import error, utils
 import importlib.util
 from aztk.plugins import PluginDefinition
 
@@ -27,6 +27,10 @@ class PluginManager:
             raise error.InvalidPluginDefinition("Plugin {0} definition method doesn't return a PluginDefinition object".format(path))
 
         self.plugins[definition.name] = self._expand_definition(path, definition)
+
+    def load_all_plugins(self, directory: str):
+        for folder in os.listdir(directory):
+            self.load_plugin(os.path.join(directory, folder))
 
     def _load_plugin_module(self, path: str):
         entry_file = self._get_entry_point(path)
@@ -62,3 +66,6 @@ class PluginManager:
         definition.files = new_files
 
         return definition
+
+plugin_manager = PluginManager()
+plugin_manager.load_all_plugins(os.path.join(utils.constants.ROOT_PATH, "base_plugins"))

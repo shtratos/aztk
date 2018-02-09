@@ -1,5 +1,6 @@
 from typing import List
 from aztk import error
+from aztk.plugins.internal import plugin_manager
 import aztk.utils.constants as constants
 import azure.batch.models as batch_models
 from aztk.plugins import PluginDefinition
@@ -76,14 +77,15 @@ class PluginConfiguration(ConfigurationBase):
     def __init__(self, name, args: dict):
         self.name = name
         self.args = args
-        self._definition = None
+        if plugin_manager.has_plugin(self.name):
+            self.definition = plugin_manager.get_plugin(self.name)
 
-    def set_definition(self, definition):
-        self._definition = definition
+    def validate(self) -> bool:
+        if not self.name:
+            raise error.AztkError("Plugin is missing a name")
 
-    def definition(self) -> PluginDefinition:
-        return self._definition
-
+        if not self.definition:
+            raise error.AztkError("Cannot find a plugin with name '{0}'".format(self.name))
 
 class ClusterConfiguration(ConfigurationBase):
     """
