@@ -50,13 +50,11 @@ def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mo
     cmd.add_option('-e', 'SPARK_WORKER_UI_PORT=$SPARK_WORKER_UI_PORT')
     cmd.add_option('-e', 'SPARK_CONTAINER_NAME=$SPARK_CONTAINER_NAME')
     cmd.add_option('-e', 'SPARK_SUBMIT_LOGS_FILE=$SPARK_SUBMIT_LOGS_FILE')
-    cmd.add_option('-e', 'SPARK_JUPYTER_PORT=$SPARK_JUPYTER_PORT')
     cmd.add_option('-e', 'SPARK_JOB_UI_PORT=$SPARK_JOB_UI_PORT')
     cmd.add_option('-p', '8080:8080')       # Spark Master UI
     cmd.add_option('-p', '7077:7077')       # Spark Master
     cmd.add_option('-p', '7337:7337')       # Spark Shuffle Service
     cmd.add_option('-p', '4040:4040')       # Job UI
-    cmd.add_option('-p', '8787:8787')       # Rstudio Server
     cmd.add_option('-p', '18080:18080')     # Spark History Server UI
     cmd.add_option('-p', '3022:3022')       # Docker SSH
     cmd.add_option('-p', '8020:8020')       # Namenode IPC: ClientProtocol
