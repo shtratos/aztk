@@ -7,6 +7,7 @@ from aztk.plugins import PluginDefinition
 import yaml
 import logging
 
+
 class ConfigurationBase:
     """
     Base class for any configuration.
@@ -76,7 +77,7 @@ class PluginConfiguration(ConfigurationBase):
 
     def __init__(self, name, args: dict):
         self.name = name
-        self.args = args
+        self.args = args or dict()
         if plugin_manager.has_plugin(self.name):
             self.definition = plugin_manager.get_plugin(self.name)
 
@@ -86,6 +87,7 @@ class PluginConfiguration(ConfigurationBase):
 
         if not self.definition:
             raise error.AztkError("Cannot find a plugin with name '{0}'".format(self.name))
+
 
 class ClusterConfiguration(ConfigurationBase):
     """
@@ -322,7 +324,6 @@ class Cluster:
                         logging.warn("Pool %s contains invalid cluster configuration", pool.id)
         logging.warn("Pool %s doesn't contains cluster configuration", pool.id)
         return None
-
 
 
 class SSHLog():
