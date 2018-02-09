@@ -7,8 +7,5 @@ trim_trailing_whitespace = true
 [*.{json,yml,yaml}]
 indent_size = 2
 
-[*.yml]
-indent_size = 2
-
 [*.xml]
 indent_size = 2

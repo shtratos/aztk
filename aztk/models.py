@@ -4,37 +4,9 @@ from aztk.plugins.internal import plugin_manager
 import aztk.utils.constants as constants
 import azure.batch.models as batch_models
 from aztk.plugins import PluginDefinition
+from aztk.internal import ConfigurationBase
 import yaml
 import logging
-
-
-class ConfigurationBase:
-    """
-    Base class for any configuration.
-    Include methods to help with validation
-    """
-
-    def validate(self):
-        raise NotImplementedError("Validate not implemented")
-
-    def valid(self):
-        try:
-            self.validate()
-            return True
-        except error.AztkError:
-            return False
-
-    def _validate_required(self, attrs):
-        for attr in attrs:
-            if not getattr(self, attr):
-                raise error.AztkError(
-                    "{0} missing {1}.".format(self.__class__.__name__, attr))
-
-    def _merge_attributes(self, other, attrs):
-        for attr in attrs:
-            val = getattr(other, attr)
-            if val is not None:
-                setattr(self, attr, val)
 
 
 class FileShare:
@@ -57,7 +29,10 @@ class CustomScript:
 
 
 class UserConfiguration(ConfigurationBase):
-    def __init__(self, username: str, ssh_key: str = None, password: str = None):
+    def __init__(self,
+                 username: str,
+                 ssh_key: str = None,
+                 password: str = None):
         self.username = username
         self.ssh_key = ssh_key
         self.password = password
@@ -74,7 +49,6 @@ class PluginConfiguration(ConfigurationBase):
     """
     Contains the configuration to use a plugin
     """
-
     def __init__(self, name, args: dict):
         self.name = name
         self.args = args or dict()
@@ -86,7 +60,8 @@ class PluginConfiguration(ConfigurationBase):
             raise error.AztkError("Plugin is missing a name")
 
         if not self.definition:
-            raise error.AztkError("Cannot find a plugin with name '{0}'".format(self.name))
+            raise error.AztkError(
+                "Cannot find a plugin with name '{0}'".format(self.name))
 
 
 class ClusterConfiguration(ConfigurationBase):
@@ -94,18 +69,17 @@ class ClusterConfiguration(ConfigurationBase):
     Cluster configuration model
     """
 
-    def __init__(
-            self,
-            custom_scripts: List[CustomScript] = None,
-            file_shares: List[FileShare] = None,
-            cluster_id: str = None,
-            vm_count=0,
-            vm_low_pri_count=0,
-            vm_size=None,
-            subnet_id=None,
-            docker_repo: str=None,
-            plugins: List[PluginConfiguration] = None,
-            user_configuration: UserConfiguration=None):
+    def __init__(self,
+                 custom_scripts: List[CustomScript] = None,
+                 file_shares: List[FileShare] = None,
+                 cluster_id: str = None,
+                 vm_count=0,
+                 vm_low_pri_count=0,
+                 vm_size=None,
+                 subnet_id=None,
+                 docker_repo: str = None,
+                 plugins: List[PluginConfiguration] = None,
+                 user_configuration: UserConfiguration = None):
         super().__init__()
         self.custom_scripts = custom_scripts
         self.file_shares = file_shares
@@ -158,15 +132,18 @@ class ClusterConfiguration(ConfigurationBase):
 
         if self.vm_count == 0 and self.vm_low_pri_count == 0:
             raise error.AztkError(
-                "Please supply a valid (greater than 0) size or size_low_pri value either in the cluster.yaml configuration file or with a parameter (--size or --size-low-pri)")
+                "Please supply a valid (greater than 0) size or size_low_pri value either in the cluster.yaml configuration file or with a parameter (--size or --size-low-pri)"
+            )
 
         if self.vm_size is None:
             raise error.AztkError(
-                "Please supply a vm_size in either the cluster.yaml configuration file or with a parameter (--vm-size)")
+                "Please supply a vm_size in either the cluster.yaml configuration file or with a parameter (--vm-size)"
+            )
 
         if self.mixed_mode() and not self.subnet_id:
             raise error.AztkError(
-                "You must configure a VNET to use AZTK in mixed mode (dedicated and low priority nodes). Set the VNET's subnet_id in your cluster.yaml.")
+                "You must configure a VNET to use AZTK in mixed mode (dedicated and low priority nodes). Set the VNET's subnet_id in your cluster.yaml."
+            )
 
 
 class RemoteLogin:
@@ -242,11 +219,7 @@ class SharedKeyConfiguration(ConfigurationBase):
 
 
 class DockerConfiguration(ConfigurationBase):
-    def __init__(
-            self,
-            endpoint=None,
-            username=None,
-            password=None):
+    def __init__(self, endpoint=None, username=None, password=None):
 
         self.endpoint = endpoint
         self.username = username
@@ -257,13 +230,12 @@ class DockerConfiguration(ConfigurationBase):
 
 
 class SecretsConfiguration(ConfigurationBase):
-    def __init__(
-            self,
-            service_principal=None,
-            shared_key=None,
-            docker=None,
-            ssh_pub_key=None,
-            ssh_priv_key=None):
+    def __init__(self,
+                 service_principal=None,
+                 shared_key=None,
+                 docker=None,
+                 ssh_pub_key=None,
+                 ssh_priv_key=None):
         self.service_principal = service_principal
         self.shared_key = shared_key
         self.docker = docker
@@ -274,14 +246,16 @@ class SecretsConfiguration(ConfigurationBase):
     def validate(self):
         if self.service_principal and self.shared_key:
             raise error.AztkError(
-                "Both service_principal and shared_key auth are configured, must use only one")
+                "Both service_principal and shared_key auth are configured, must use only one"
+            )
         elif self.service_principal:
             self.service_principal.validate()
         elif self.shared_key:
             self.shared_key.validate()
         else:
             raise error.AztkError(
-                "Neither service_principal and shared_key auth are configured, must use only one")
+                "Neither service_principal and shared_key auth are configured, must use only one"
+            )
 
     def is_aad(self):
         return self.service_principal is not None
@@ -295,7 +269,9 @@ class VmImage:
 
 
 class Cluster:
-    def __init__(self, pool: batch_models.CloudPool, nodes: batch_models.ComputeNodePaged = None):
+    def __init__(self,
+                 pool: batch_models.CloudPool,
+                 nodes: batch_models.ComputeNodePaged = None):
         self.id = pool.id
         self.pool = pool
         self.nodes = nodes
@@ -314,14 +290,17 @@ class Cluster:
         self.target_low_pri_nodes = pool.target_low_priority_nodes
         self.configuration = self._get_cluster_config(pool)
 
-    def _get_cluster_config(self, pool: batch_models.CloudPool) -> ClusterConfiguration:
+    def _get_cluster_config(
+            self, pool: batch_models.CloudPool) -> ClusterConfiguration:
         if pool.metadata:
             for metadata in pool.metadata:
                 if metadata.name == constants.AZTK_CLUSTER_CONFIG_METADATA_KEY:
                     try:
                         return yaml.load(metadata.value)
                     except yaml.YAMLError:
-                        logging.warn("Pool %s contains invalid cluster configuration", pool.id)
+                        logging.warn(
+                            "Pool %s contains invalid cluster configuration",
+                            pool.id)
         logging.warn("Pool %s doesn't contains cluster configuration", pool.id)
         return None
 

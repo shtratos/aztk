@@ -192,10 +192,9 @@ def cluster_config_from_dict(config: dict):
         output.docker_repo = config['docker_repo']
 
     if config.get('plugins') not in [[None], None]:
+        output.plugins = []
         for plugin in config['plugins']:
-            name = plugin.get('name')
-            args = plugin.get('args', dict())
-            output.plugins.append(PluginConfiguration(name=name, args=args))
+            output.plugins.append(PluginConfiguration.from_dict(plugin))
 
     if config.get('wait') is not None:
         wait = config['wait']
