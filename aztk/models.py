@@ -90,7 +90,7 @@ class ClusterConfiguration(ConfigurationBase):
         self.subnet_id = subnet_id
         self.docker_repo = docker_repo
         self.user_configuration = user_configuration
-        self.plugins = plugins or []
+        self.plugins = plugins
 
     def merge(self, other):
         """
@@ -107,6 +107,7 @@ class ClusterConfiguration(ConfigurationBase):
             "docker_repo",
             "vm_count",
             "vm_low_pri_count",
+            "plugins",
         ])
 
         if other.user_configuration:
@@ -114,8 +115,6 @@ class ClusterConfiguration(ConfigurationBase):
                 self.user_configuration.merge(other.user_configuration)
             else:
                 self.user_configuration = other.user_configuration
-
-        self.plugins += other.plugins
 
     def mixed_mode(self) -> bool:
         return self.vm_count > 0 and self.vm_low_pri_count > 0
