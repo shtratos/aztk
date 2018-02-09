@@ -132,7 +132,6 @@ def ssh_in_master(
         webui: str = None,
         jobui: str = None,
         jobhistoryui: str = None,
-        jupyter: str = None,
         namenodeui: str = None,
         rstudioserver: str = None,
         ports=None,
@@ -185,8 +184,6 @@ def ssh_in_master(
     ssh_command.add_option("-L", "{0}:localhost:{1}".format(
         jobhistoryui, spark_job_history_ui_port), enable=bool(jobui))
     ssh_command.add_option("-L", "{0}:localhost:{1}".format(
-        jupyter, spark_jupyter_port), enable=bool(jupyter))
-    ssh_command.add_option("-L", "{0}:localhost:{1}".format(
         namenodeui, spark_namenode_ui_port), enable=bool(namenodeui))
     ssh_command.add_option("-L", "{0}:localhost:{1}".format(
         rstudioserver, spark_rstudio_server_port), enable=bool(rstudioserver))
@@ -195,6 +192,10 @@ def ssh_in_master(
         for port in ports:
             ssh_command.add_option(
                 "-L", "{0}:localhost:{1}".format(port[0], port[1]))
+    if cluster.configuration and cluster.configuration.plugins:
+        for plugin in cluster.configuration.plugins:
+            for port in plugin.definition().ports:
+                ssh_command.add_option("-L", "{0}:localhost:{1}".format(port.local, port.remote))
 
     user = username if username is not None else '<username>'
     ssh_command.add_argument(

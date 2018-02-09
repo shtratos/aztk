@@ -37,6 +37,7 @@ def setup_parser(parser: argparse.ArgumentParser):
 
 def execute(args: typing.NamedTuple):
     spark_client = aztk.spark.Client(config.load_aztk_screts())
+    cluster = spark_client.get_cluster(args.cluster_id)
     ssh_conf = SshConfig()
 
     ssh_conf.merge(
@@ -58,12 +59,25 @@ def execute(args: typing.NamedTuple):
     log.info("open webui:          %s%s", http_prefix, ssh_conf.web_ui_port)
     log.info("open jobui:          %s%s", http_prefix, ssh_conf.job_ui_port)
     log.info("open jobhistoryui:   %s%s", http_prefix, ssh_conf.job_history_ui_port)
-    log.info("open jupyter:        %s%s", http_prefix, ssh_conf.jupyter_port)
     log.info("open namenodeui:     %s%s", http_prefix, ssh_conf.name_node_ui_port)
     log.info("open rstudio server: %s%s", http_prefix, ssh_conf.rstudio_server_port)
     log.info("ssh username:        %s", ssh_conf.username)
     log.info("connect:             %s", ssh_conf.connect)
     log.info("-------------------------------------------")
+
+    if cluster.configuration and cluster.configuration.plugins:
+        plugins =  cluster.configuration.plugins
+        has_ports = False
+        for plugin in plugins:
+            for port in plugin.definition().ports:
+                has_ports = True
+                break
+
+        if has_ports > 0:
+            log.info("Plugins:")
+            for plugin in plugins:
+                for port in plugin.definition().ports:
+                    log.info("  - open %s: %s%s", plugin.name, http_prefix, port.local)
 
     # get ssh command
     try:
@@ -74,7 +88,6 @@ def execute(args: typing.NamedTuple):
             jobui=ssh_conf.job_ui_port,
             jobhistoryui=ssh_conf.job_history_ui_port,
             namenodeui=ssh_conf.name_node_ui_port,
-            jupyter=ssh_conf.jupyter_port,
             rstudioserver=ssh_conf.rstudio_server_port,
             username=ssh_conf.username,
             host=ssh_conf.host,
