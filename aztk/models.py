@@ -314,7 +314,10 @@ class Cluster:
         if pool.metadata:
             for metadata in pool.metadata:
                 if metadata.name == constants.AZTK_CLUSTER_CONFIG_METADATA_KEY:
-                    return yaml.load(metadata.value)
+                    try:
+                        return yaml.load(metadata.value)
+                    except yaml.YAMLError:
+                        logging.warn("Pool %s contains invalid cluster configuration", pool.id)
         logging.warn("Pool %s doesn't contains cluster configuration", pool.id)
         return None
 
