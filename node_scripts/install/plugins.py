@@ -69,6 +69,7 @@ def _run_script(name: str, script_path: str = None, args: dict = None):
         return
     file_stat = os.stat(script_path)
     os.chmod(script_path, file_stat.st_mode | 0o777)
+    print("------------------------------------------------------------------")
     print("Running plugin script:", script_path)
 
     my_env = os.environ.copy()
@@ -78,12 +79,14 @@ def _run_script(name: str, script_path: str = None, args: dict = None):
 
     log_folder = os.path.join(os.environ['DOCKER_WORKING_DIR'], 'logs',
                               'plugins')
-    out_file = open(os.path.join(log_folder, '{0}.txt',format(name)), 'w')
+    out_file = open(os.path.join(log_folder, '{0}.txt'.format(name)), 'w')
     try:
         subprocess.call(
             [script_path],
             env=my_env,
             stdout=out_file,
             stderr=out_file)
+        print("Finished running")
+        print("------------------------------------------------------------------")
     except Exception as e:
         print(e)

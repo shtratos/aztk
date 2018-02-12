@@ -172,6 +172,7 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
             zipf = __add_file_to_zip(zipf, filePath, 'plugins/{0}'.format(plugin.name), binary=False)
         if definition.execute:
             data.append(dict(
+                name=plugin.name,
                 execute='{0}/{1}'.format(plugin.name, definition.execute),
                 args=plugin.process_args(plugin_conf.args),
                 runOn=definition.run_on.value,
