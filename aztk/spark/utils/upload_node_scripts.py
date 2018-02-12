@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from aztk.utils import constants
 from aztk.utils import helpers
+from aztk.error import InvalidCustomScriptError
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
@@ -87,8 +88,11 @@ def __add_custom_scripts(zipf, custom_scripts):
     for index, custom_script in enumerate(custom_scripts):
         new_file_name = str(index) + '_' + os.path.basename(custom_script.script)
         data.append(dict(script=new_file_name, runOn=str(custom_script.run_on)))
-        with io.open(custom_script.script, 'r') as f:
-            zipf.writestr(os.path.join('custom-scripts', new_file_name), f.read().replace('\r\n', '\n'))
+        try:
+            with io.open(custom_script.script, 'r') as f:
+                zipf.writestr(os.path.join('custom-scripts', new_file_name), f.read().replace('\r\n', '\n'))
+        except FileNotFoundError:
+            raise InvalidCustomScriptError("Custom script '{0}' doesn't exists.".format(custom_script.script))
 
     zipf.writestr(os.path.join('custom-scripts', 'custom-scripts.yaml'), yaml.dump(data, default_flow_style=False))
 

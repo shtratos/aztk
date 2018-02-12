@@ -23,6 +23,12 @@ class InvalidPluginDefinitionError(AztkError):
 class InvalidModelError(AztkError):
     pass
 
+class MissingRequiredAttributeError(InvalidModelError):
+    pass
+
+class InvalidCustomScriptError(InvalidModelError):
+    pass
+
 class InvalidPluginConfigurationError(InvalidModelError):
     # from aztk.plugins import PluginDefinition
 
