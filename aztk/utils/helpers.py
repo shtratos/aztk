@@ -390,9 +390,9 @@ def save_cluster_config(cluster_config, blob_client):
 def read_cluster_config(cluster_id: str, blob_client: blob.BlockBlobService):
     blob_path = "clusters/{0}/config.yaml".format(cluster_id)
     try:
-        blob = blob_client.get_blob_to_text(constants.AZTK_STORAGE_CONTAINER,
+        result = blob_client.get_blob_to_text(constants.AZTK_STORAGE_CONTAINER,
                                         blob_path)
-        return yaml.load(blob.content)
+        return yaml.load(result.content)
     except azure.common.AzureMissingResourceHttpError:
         logging.warn("Cluster %s doesn't have cluster configuration in storage", cluster_id)
     except yaml.YAMLError:
