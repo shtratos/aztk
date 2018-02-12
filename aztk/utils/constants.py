@@ -16,9 +16,6 @@ DOCKER_SPARK_JOB_UI_PORT = 4040
 DOCKER_SPARK_JOB_UI_HISTORY_PORT = 18080
 DOCKER_SPARK_HOME = "/home/spark-current"
 
-# DOCKER HDFS
-DOCKER_SPARK_NAMENODE_UI_PORT = 50070
-
 """
     Root path of this repository
 """

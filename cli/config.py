@@ -213,9 +213,6 @@ class SshConfig:
         self.job_ui_port = '4040'
         self.job_history_ui_port = '18080'
         self.web_ui_port = '8080'
-        self.jupyter_port = '8888'
-        self.name_node_ui_port = '50070'
-        self.rstudio_server_port = '8787'
 
     def _read_config_file(
             self, path: str = aztk.utils.constants.DEFAULT_SSH_CONFIG_PATH):

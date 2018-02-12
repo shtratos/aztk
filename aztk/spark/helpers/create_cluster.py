@@ -57,13 +57,6 @@ def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mo
     cmd.add_option('-p', '4040:4040')       # Job UI
     cmd.add_option('-p', '18080:18080')     # Spark History Server UI
     cmd.add_option('-p', '3022:3022')       # Docker SSH
-    cmd.add_option('-p', '8020:8020')       # Namenode IPC: ClientProtocol
-    cmd.add_option('-p', '9000:9000')       # Namenode IPC: ClientProtocol
-    cmd.add_option('-p', '50010:50010')     # Datanode http data transfer
-    cmd.add_option('-p', '50020:50020')     # Datanode IPC metaata operations
-    cmd.add_option('-p', '50070:50070')     # Namenode WebUI
-    cmd.add_option('-p', '50075:50075')     # DataNode WebUI
-    cmd.add_option('-p', '50090:50090')     # Secondary NameNode http address
     if plugins:
         for plugin in plugins:
             for port in plugin.ports:
