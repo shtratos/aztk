@@ -33,7 +33,7 @@ def main():
     except batch_error.BatchErrorException as e:
         utils.print_batch_exception(e)
     except aztk.error.AztkError as e:
-        log.error(e.message)
+        log.error(str(e))
 
 
 def setup_common_args(parser: argparse.ArgumentParser):
