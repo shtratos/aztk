@@ -295,21 +295,6 @@ class Cluster:
         self.current_low_pri_nodes = pool.current_low_priority_nodes
         self.target_dedicated_nodes = pool.target_dedicated_nodes
         self.target_low_pri_nodes = pool.target_low_priority_nodes
-        self.configuration = self._get_cluster_config(pool)
-
-    def _get_cluster_config(
-            self, pool: batch_models.CloudPool) -> ClusterConfiguration:
-        if pool.metadata:
-            for metadata in pool.metadata:
-                if metadata.name == constants.AZTK_CLUSTER_CONFIG_METADATA_KEY:
-                    try:
-                        return yaml.load(metadata.value)
-                    except yaml.YAMLError:
-                        logging.warn(
-                            "Pool %s contains invalid cluster configuration",
-                            pool.id)
-        logging.warn("Pool %s doesn't contains cluster configuration", pool.id)
-        return None
 
 
 class SSHLog():

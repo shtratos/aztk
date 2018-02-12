@@ -67,6 +67,7 @@ class Client:
             :param VmImageModel: the type of image to provision for the cluster
             :param wait: wait until the cluster is ready
         """
+        helpers.save_cluster_config(cluster_conf, self.blob_client)
         # reuse pool_id as job_id
         pool_id = cluster_conf.cluster_id
         job_id = cluster_conf.cluster_id
@@ -100,8 +101,6 @@ class Client:
             metadata=[
                 batch_models.MetadataItem(
                     name=constants.AZTK_SOFTWARE_METADATA_KEY, value=software_metadata_key),
-                batch_models.MetadataItem(
-                    name=constants.AZTK_CLUSTER_CONFIG_METADATA_KEY, value=yaml.dump(cluster_conf)),
             ])
 
         # Create the pool + create user for the pool

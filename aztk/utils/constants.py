@@ -71,3 +71,6 @@ AZTK_CLUSTER_CONFIG_METADATA_KEY = "_aztk_cluster_config"
 
 TASK_WORKING_DIR = "wd"
 SPARK_SUBMIT_LOGS_FILE = "output.log"
+
+
+AZTK_STORAGE_CONTAINER = "aztk"

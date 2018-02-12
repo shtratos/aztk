@@ -42,6 +42,7 @@ http_prefix = 'http://localhost:'
 def execute(args: typing.NamedTuple):
     spark_client = aztk.spark.Client(config.load_aztk_screts())
     cluster = spark_client.get_cluster(args.cluster_id)
+    cluster_config = utils.helpers.read_cluster_config(args.cluster_id, spark_client.blob_client)
     ssh_conf = SshConfig()
 
     ssh_conf.merge(
@@ -63,9 +64,7 @@ def execute(args: typing.NamedTuple):
     log.info("open jobui:          %s%s", http_prefix, ssh_conf.job_ui_port)
     log.info("open jobhistoryui:   %s%s", http_prefix,
              ssh_conf.job_history_ui_port)
-    log.info("open namenodeui:     %s%s",
-             http_prefix, ssh_conf.name_node_ui_port)
-    print_plugin_ports(cluster)
+    print_plugin_ports(cluster_config)
     log.info("ssh username:        %s", ssh_conf.username)
     log.info("connect:             %s", ssh_conf.connect)
     log.info("-------------------------------------------")
@@ -78,7 +77,6 @@ def execute(args: typing.NamedTuple):
             webui=ssh_conf.web_ui_port,
             jobui=ssh_conf.job_ui_port,
             jobhistoryui=ssh_conf.job_history_ui_port,
-            namenodeui=ssh_conf.name_node_ui_port,
             username=ssh_conf.username,
             host=ssh_conf.host,
             connect=ssh_conf.connect)
@@ -97,10 +95,10 @@ def execute(args: typing.NamedTuple):
             raise
 
 
-def print_plugin_ports(cluster: ClusterConfiguration):
+def print_plugin_ports(cluster_config: ClusterConfiguration):
 
-    if cluster.configuration and cluster.configuration.plugins:
-        plugins = cluster.configuration.plugins
+    if cluster_config and cluster_config.plugins:
+        plugins = cluster_config.plugins
         has_ports = False
         for plugin in plugins:
             for port in plugin.definition.ports:

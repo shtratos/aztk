@@ -7,7 +7,7 @@ from subprocess import call
 from typing import List
 import azure.batch.models as batch_models
 from aztk import error, utils
-from aztk.utils import get_ssh_key
+from aztk.utils import get_ssh_key, helpers
 from aztk.models import ClusterConfiguration
 from aztk.spark import models
 from . import log
@@ -132,7 +132,6 @@ def ssh_in_master(
         webui: str = None,
         jobui: str = None,
         jobhistoryui: str = None,
-        namenodeui: str = None,
         ports=None,
         host: bool = False,
         connect: bool = True):
@@ -148,6 +147,8 @@ def ssh_in_master(
 
     # Get master node id from task (job and task are both named pool_id)
     cluster = client.get_cluster(cluster_id)
+    configuration = helpers.read_cluster_config(cluster_id, client.blob_client)
+
     master_node_id = cluster.master_node_id
 
     if master_node_id is None:
@@ -162,7 +163,6 @@ def ssh_in_master(
     spark_worker_ui_port = utils.constants.DOCKER_SPARK_WORKER_UI_PORT
     spark_job_ui_port = utils.constants.DOCKER_SPARK_JOB_UI_PORT
     spark_job_history_ui_port = utils.constants.DOCKER_SPARK_JOB_UI_HISTORY_PORT
-    spark_namenode_ui_port = utils.constants.DOCKER_SPARK_NAMENODE_UI_PORT
 
     ssh_command = utils.command_builder.CommandBuilder('ssh')
 
@@ -178,15 +178,13 @@ def ssh_in_master(
         jobui, spark_job_ui_port), enable=bool(jobui))
     ssh_command.add_option("-L", "{0}:localhost:{1}".format(
         jobhistoryui, spark_job_history_ui_port), enable=bool(jobui))
-    ssh_command.add_option("-L", "{0}:localhost:{1}".format(
-        namenodeui, spark_namenode_ui_port), enable=bool(namenodeui))
 
     if ports is not None:
         for port in ports:
             ssh_command.add_option(
                 "-L", "{0}:localhost:{1}".format(port[0], port[1]))
-    if cluster.configuration and cluster.configuration.plugins:
-        for plugin in cluster.configuration.plugins:
+    if configuration and configuration.plugins:
+        for plugin in configuration.plugins:
             for port in plugin.definition.ports:
                 if port.expose_publicly:
                     ssh_command.add_option("-L", "{0}:localhost:{1}".format(port.public_port, port.internal))
