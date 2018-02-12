@@ -7,8 +7,8 @@ def definition():
         name="rstudio_server",
         ports=[
             PluginPort(
-                remote=8787,
-                local=8787,
+                internal=8787,
+                public=True,
             ),
         ],
         runOn=PluginRunTarget.Master,

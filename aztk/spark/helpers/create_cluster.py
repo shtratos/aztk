@@ -67,7 +67,7 @@ def __docker_run_cmd(docker_repo: str = None, gpu_enabled: bool = False, file_mo
     if plugins:
         for plugin in plugins:
             for port in plugin.ports:
-                cmd.add_option('-p', '{0}:{1}'.format(port.remote, port.remote))       # Jupyter UI
+                cmd.add_option('-p', '{0}:{1}'.format(port.internal, port.internal))       # Jupyter UI
 
     cmd.add_option('-d', docker_repo)
     cmd.add_argument('/bin/bash /mnt/batch/tasks/startup/wd/docker_main.sh')

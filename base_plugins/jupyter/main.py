@@ -6,8 +6,8 @@ def definition():
         name="jupyter",
         ports=[
             PluginPort(
-                remote=8888,
-                local=8888,
+                internal=8888,
+                public=True,
             ),
         ],
         runOn=PluginRunTarget.All,

@@ -188,7 +188,8 @@ def ssh_in_master(
     if cluster.configuration and cluster.configuration.plugins:
         for plugin in cluster.configuration.plugins:
             for port in plugin.definition.ports:
-                ssh_command.add_option("-L", "{0}:localhost:{1}".format(port.local, port.remote))
+                if port.expose_publicly:
+                    ssh_command.add_option("-L", "{0}:localhost:{1}".format(port.public_port, port.internal))
 
     user = username if username is not None else '<username>'
     ssh_command.add_argument(

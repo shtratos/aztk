@@ -1,19 +1,22 @@
-from typing import List
+from typing import List, Union
 from enum import Enum
 
 
 class PluginPort:
     """
         Definition for a port that should be opened on node
-        :param remote: Port on the node
-        :param local: [Optional] Port available to the user. If none won't open any port to the user
+        :param internal: Port on the node
+        :param public: [Optional] Port available to the user. If none won't open any port to the user
         :param name: [Optional] name to differentiate ports if you have multiple
     """
 
-    def __init__(self, remote: int, local: int = None, name=None):
+    def __init__(self, internal: int, public: Union[int,bool] = False, name=None):
 
-        self.remote = remote
-        self.local = local
+        self.internal = internal
+        self.expose_publicly = bool(public)
+        self.public_port = None
+        if self.expose_publicly and isinstance(public, int):
+            self.public_port = public
         self.name = name
 
 

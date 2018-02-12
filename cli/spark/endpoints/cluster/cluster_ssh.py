@@ -104,12 +104,14 @@ def print_plugin_ports(cluster: ClusterConfiguration):
         has_ports = False
         for plugin in plugins:
             for port in plugin.definition.ports:
-                has_ports = True
-                break
+                if port.expose_publicly:
+                    has_ports = True
+                    break
 
         if has_ports > 0:
             log.info("Plugins:")
             for plugin in plugins:
                 for port in plugin.definition.ports:
-                    log.info("  - open %s %s: %s%s", plugin.name, port.name or '',
-                             http_prefix, port.local)
+                    if port.expose_publicly:
+                        log.info("  - open %s %s: %s%s", plugin.name, port.name or '',
+                                http_prefix, port.local)
