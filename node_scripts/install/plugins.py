@@ -3,6 +3,7 @@ import json
 import subprocess
 from pathlib import Path
 
+
 def _read_manifest_file(path=None):
     custom_scripts = None
     if not os.path.isfile(path):
@@ -55,16 +56,16 @@ def _setup_plugins(plugins_manifest, is_master=False, is_worker=False):
     else:
         os.environ["IS_WORKER"] = "0"
 
-
     for plugin in plugins_manifest:
         if _run_on_this_node(plugin, is_master, is_worker):
             path = os.path.join(plugins_dir, plugin['execute'])
-            _run_script(path, plugin.get('args'))
+            _run_script(plugin.get("name"), path, plugin.get('args'))
 
 
-def _run_script(script_path: str=None, args: dict = None):
+def _run_script(name: str, script_path: str = None, args: dict = None):
     if not os.path.isfile(script_path):
-        print("Cannot run plugin script: {0} file does not exist".format(script_path))
+        print("Cannot run plugin script: {0} file does not exist".format(
+            script_path))
         return
     file_stat = os.stat(script_path)
     os.chmod(script_path, file_stat.st_mode | 0o777)
@@ -75,7 +76,14 @@ def _run_script(script_path: str=None, args: dict = None):
         for [key, value] in args.items():
             my_env[key] = value
 
+    log_folder = os.path.join(os.environ['DOCKER_WORKING_DIR'], 'logs',
+                              'plugins')
+    out_file = open(os.path.join(log_folder, '{0}.txt',format(name)), 'w')
     try:
-        subprocess.call([script_path], shell=True, env=my_env)
+        subprocess.call(
+            [script_path],
+            env=my_env,
+            stdout=out_file,
+            stderr=out_file)
     except Exception as e:
         print(e)

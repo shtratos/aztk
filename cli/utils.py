@@ -6,10 +6,10 @@ import time
 from subprocess import call
 from typing import List
 import azure.batch.models as batch_models
-import aztk.spark
-from aztk import error
+from aztk import error, utils
 from aztk.utils import get_ssh_key
 from aztk.models import ClusterConfiguration
+from aztk.spark import models
 from . import log
 
 
@@ -33,7 +33,7 @@ def get_ssh_key_or_prompt(ssh_key, username, password, secrets_config):
             raise error.AztkError("Failed to get valid password, cannot add user to cluster. It is recommended that you provide a ssh public key in .aztk/secrets.yaml. Or provide an ssh-key or password with commnad line parameters (--ssh-key or --password). You may also run the 'aztk spark cluster add-user' command to add a user to this cluster.")
     return ssh_key, password
 
-def print_cluster(client, cluster: aztk.spark.models.Cluster):
+def print_cluster(client, cluster: models.Cluster):
     node_count = __pretty_node_count(cluster)
 
     log.info("")
@@ -65,7 +65,7 @@ def print_cluster(client, cluster: aztk.spark.models.Cluster):
         )
     log.info('')
 
-def __pretty_node_count(cluster: aztk.spark.models.Cluster) -> str:
+def __pretty_node_count(cluster: models.Cluster) -> str:
     if cluster.pool.allocation_state is batch_models.AllocationState.resizing:
         return '{} -> {}'.format(
             cluster.total_current_nodes,
@@ -73,7 +73,7 @@ def __pretty_node_count(cluster: aztk.spark.models.Cluster) -> str:
     else:
         return '{}'.format(cluster.total_current_nodes)
 
-def __pretty_dedicated_node_count(cluster: aztk.spark.models.Cluster)-> str:
+def __pretty_dedicated_node_count(cluster: models.Cluster)-> str:
     if (cluster.pool.allocation_state is batch_models.AllocationState.resizing
             or cluster.pool.state is batch_models.PoolState.deleting)\
             and cluster.current_dedicated_nodes != cluster.target_dedicated_nodes:
@@ -83,7 +83,7 @@ def __pretty_dedicated_node_count(cluster: aztk.spark.models.Cluster)-> str:
     else:
         return '{}'.format(cluster.current_dedicated_nodes)
 
-def __pretty_low_pri_node_count(cluster: aztk.spark.models.Cluster)-> str:
+def __pretty_low_pri_node_count(cluster: models.Cluster)-> str:
     if (cluster.pool.allocation_state is batch_models.AllocationState.resizing
             or cluster.pool.state is batch_models.PoolState.deleting)\
             and cluster.current_low_pri_nodes != cluster.target_low_pri_nodes:
@@ -93,7 +93,7 @@ def __pretty_low_pri_node_count(cluster: aztk.spark.models.Cluster)-> str:
     else:
         return '{}'.format(cluster.current_low_pri_nodes)
 
-def print_clusters(clusters: List[aztk.spark.models.Cluster]):
+def print_clusters(clusters: List[models.Cluster]):
     print_format = '{:<34}| {:<10}| {:<20}| {:<7}'
     print_format_underline = '{:-<34}|{:-<11}|{:-<21}|{:-<7}'
 
@@ -151,20 +151,20 @@ def ssh_in_master(
     master_node_id = cluster.master_node_id
 
     if master_node_id is None:
-        raise aztk.error.ClusterNotReadyError("Master node has not yet been picked!")
+        raise error.ClusterNotReadyError("Master node has not yet been picked!")
 
     # get remote login settings for the user
     remote_login_settings = client.get_remote_login_settings(cluster.id, master_node_id)
     master_node_ip = remote_login_settings.ip_address
     master_node_port = remote_login_settings.port
 
-    spark_web_ui_port = aztk.utils.constants.DOCKER_SPARK_WEB_UI_PORT
-    spark_worker_ui_port = aztk.utils.constants.DOCKER_SPARK_WORKER_UI_PORT
-    spark_job_ui_port = aztk.utils.constants.DOCKER_SPARK_JOB_UI_PORT
-    spark_job_history_ui_port = aztk.utils.constants.DOCKER_SPARK_JOB_UI_HISTORY_PORT
-    spark_namenode_ui_port = aztk.utils.constants.DOCKER_SPARK_NAMENODE_UI_PORT
+    spark_web_ui_port = utils.constants.DOCKER_SPARK_WEB_UI_PORT
+    spark_worker_ui_port = utils.constants.DOCKER_SPARK_WORKER_UI_PORT
+    spark_job_ui_port = utils.constants.DOCKER_SPARK_JOB_UI_PORT
+    spark_job_history_ui_port = utils.constants.DOCKER_SPARK_JOB_UI_HISTORY_PORT
+    spark_namenode_ui_port = utils.constants.DOCKER_SPARK_NAMENODE_UI_PORT
 
-    ssh_command = aztk.utils.command_builder.CommandBuilder('ssh')
+    ssh_command = utils.command_builder.CommandBuilder('ssh')
 
     # get ssh private key path if specified
     ssh_priv_key = client.secrets_config.ssh_priv_key
@@ -226,7 +226,7 @@ def print_batch_exception(batch_exception):
     Job submission
 '''
 
-def print_jobs(jobs: List[aztk.spark.models.Job]):
+def print_jobs(jobs: List[models.Job]):
     print_format = '{:<34}| {:<10}| {:<20}'
     print_format_underline = '{:-<34}|{:-<11}|{:-<21}'
 
@@ -243,7 +243,7 @@ def print_jobs(jobs: List[aztk.spark.models.Job]):
         )
 
 
-def print_job(client, job: aztk.spark.models.Job):
+def print_job(client, job: models.Job):
     print_format = '{:<36}| {:<15}'
 
     log.info("")
@@ -270,7 +270,7 @@ def print_job(client, job: aztk.spark.models.Job):
     log.info("")
 
 
-def node_state_count(cluster: aztk.spark.models.Cluster):
+def node_state_count(cluster: models.Cluster):
     states = {}
     for state in batch_models.ComputeNodeState:
         states[state] = 0
@@ -279,7 +279,7 @@ def node_state_count(cluster: aztk.spark.models.Cluster):
     return states
 
 
-def print_cluster_summary(cluster: aztk.spark.models.Cluster):
+def print_cluster_summary(cluster: models.Cluster):
     print_format = '{:<4} {:<23} {:<15}'
 
     log.info("Cluster           %s", cluster.id)
@@ -347,7 +347,7 @@ def print_applications(applications):
     if warn_scheduling:
         log.warning("\nNo Spark applications will be scheduled until the master is selected.")
 
-def print_application(application: aztk.spark.models.Application):
+def print_application(application: models.Application):
     print_format = '{:<30}| {:<15}'
 
     log.info("")

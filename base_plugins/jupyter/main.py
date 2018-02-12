@@ -10,7 +10,7 @@ def definition():
                 public=True,
             ),
         ],
-        runOn=PluginRunTarget.All,
+        run_on=PluginRunTarget.All,
         execute="jupyter.sh",
         files=[
             "jupyter.sh",

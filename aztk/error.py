@@ -1,4 +1,7 @@
-from aztk.plugins import PluginDefinition
+"""
+Contains all errors used in Aztk.
+All error should inherit from `AztkError`
+"""
 
 class ClusterNotReadyError(Exception):
     pass
@@ -22,6 +25,8 @@ class InvalidModelError(AztkError):
     pass
 
 class InvalidPluginConfigurationError(InvalidModelError):
-    def __init__(self, message:str, pluginDefinition: PluginDefinition = None):
+    # from aztk.plugins import PluginDefinition
+
+    def __init__(self, message:str, pluginDefinition = None):
         super().__init__(message)
         self.pluginDefinition = pluginDefinition

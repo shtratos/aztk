@@ -11,7 +11,7 @@ def definition():
                 public=True,
             ),
         ],
-        runOn=PluginRunTarget.Master,
+        run_on=PluginRunTarget.Master,
         execute="rstudio_server.sh",
         files=[
             "rstudio_server.sh",

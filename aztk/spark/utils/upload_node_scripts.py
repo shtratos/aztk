@@ -174,7 +174,7 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
             data.append(dict(
                 execute='{0}/{1}'.format(plugin.name, definition.execute),
                 args=plugin.process_args(plugin_conf.args),
-                runOn=definition.runOn.value,
+                runOn=definition.run_on.value,
             ))
 
     zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data))

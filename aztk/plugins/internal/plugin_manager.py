@@ -1,8 +1,9 @@
 import os
-from aztk import error, utils
 import importlib.util
-from aztk.plugins import PluginDefinition
 from .plugin import Plugin
+from aztk.plugins import PluginDefinition
+from aztk.utils import constants
+from aztk.error import InvalidPluginDefinitionError
 
 
 class PluginManager:
@@ -15,7 +16,7 @@ class PluginManager:
     def load(self):
         if self.loaded:
             return
-        self.load_all_plugins(os.path.join(utils.constants.ROOT_PATH, "base_plugins"))
+        self.load_all_plugins(os.path.join(constants.ROOT_PATH, "base_plugins"))
         self.loaded = True
 
     def has_plugin(self, name: str):
@@ -48,19 +49,19 @@ class PluginManager:
 
     def _get_entry_point(self, path: str):
         if not os.path.exists(path):
-            raise error.InvalidPluginDefinition("Plugin cannot be loaded. Path '{0}' doesn't exists.".format(path))
+            raise InvalidPluginDefinitionError("Plugin cannot be loaded. Path '{0}' doesn't exists.".format(path))
         entry = os.path.join(path, PluginManager.PluginEntryPoint)
         if not os.path.exists(entry):
-            raise error.InvalidPluginDefinition(
-                "Plugin cannot be loaded. Path '{0}' doesn't contain an entry file {1}.".format(path, PluginManager.PluginEntryPoint))
+            raise InvalidPluginDefinitionError(
+                "Plugin cannot be loaded. Path '{0}' doesn't contain an entry file {1}.".format(
+                    path, PluginManager.PluginEntryPoint))
 
         return entry
 
     def _validate_plugin_module(self, path, plugin_module):
         if not hasattr(plugin_module, "definition"):
-            raise error.InvalidPluginDefinition(
+            raise InvalidPluginDefinitionError(
                 "Plugin cannot be loaded. Plugin '{0}' is missing a function called 'definition'".format(path))
-
 
     def _expand_definition(self, path: str, definition: PluginDefinition):
         """
@@ -72,6 +73,7 @@ class PluginManager:
         definition.files = new_files
 
         return definition
+
 
 plugin_manager = PluginManager()
 plugin_manager.load()

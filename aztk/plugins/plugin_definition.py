@@ -15,8 +15,12 @@ class PluginPort:
         self.internal = internal
         self.expose_publicly = bool(public)
         self.public_port = None
-        if self.expose_publicly and isinstance(public, int):
-            self.public_port = public
+        if self.expose_publicly:
+            if public is True:
+                self.public_port = internal
+            else:
+                self.public_port = public
+
         self.name = name
 
 
@@ -54,10 +58,10 @@ class PluginDefinition:
                  files: List[str] = None,
                  execute: str = None,
                  args = None,
-                 runOn: PluginRunTarget = PluginRunTarget.Master):
+                 run_on: PluginRunTarget = PluginRunTarget.Master):
         self.name = name
         # self.docker_image = docker_image
-        self.runOn = runOn
+        self.run_on = run_on
         self.ports = ports or []
         self.files = files or []
         args = args or []
