@@ -4,6 +4,8 @@ import subprocess
 from pathlib import Path
 
 
+log_folder = os.path.join(os.environ['DOCKER_WORKING_DIR'], 'logs','plugins')
+
 def _read_manifest_file(path=None):
     custom_scripts = None
     if not os.path.isfile(path):
@@ -23,6 +25,9 @@ def setup_plugins(is_master: bool = False, is_worker: bool = False):
     plugins_dir = _plugins_dir()
     plugins_manifest = _read_manifest_file(
         os.path.join(plugins_dir, 'plugins-manifest.json'))
+
+    if not os.path.exists(log_folder):
+        os.makedirs(log_folder)
 
     if plugins_manifest is not None:
         _setup_plugins(plugins_manifest, is_master, is_worker)
@@ -77,8 +82,7 @@ def _run_script(name: str, script_path: str = None, args: dict = None):
         for [key, value] in args.items():
             my_env[key] = value
 
-    log_folder = os.path.join(os.environ['DOCKER_WORKING_DIR'], 'logs',
-                              'plugins')
+
     out_file = open(os.path.join(log_folder, '{0}.txt'.format(name)), 'w')
     try:
         subprocess.call(
