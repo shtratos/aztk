@@ -419,7 +419,7 @@ def print_cluster_conf(cluster_conf: ClusterConfiguration, wait: bool):
     if user_configuration.password:
         log.info("Password: %s", '*' * len(user_configuration.password))
     log.info("Plugins:")
-    if len(cluster_conf.plugins) == 0:
+    if cluster_conf.plugins is None or len(cluster_conf.plugins) == 0:
         log.info("    None Configured")
     else:
         for plugin in cluster_conf.plugins:
