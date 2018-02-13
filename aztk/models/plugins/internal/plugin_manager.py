@@ -1,7 +1,7 @@
 import os
 import importlib.util
 from .plugin import Plugin
-from aztk.plugins import PluginDefinition
+from aztk.models.plugins import PluginDefinition
 from aztk.utils import constants
 from aztk.error import InvalidPluginDefinitionError
 

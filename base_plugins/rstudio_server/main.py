@@ -1,4 +1,4 @@
-from aztk.plugins import PluginDefinition, PluginPort, PluginRunTarget
+from aztk.models.plugins import PluginDefinition, PluginPort, PluginRunTarget
 from aztk.error import InvalidPluginConfigurationError
 
 

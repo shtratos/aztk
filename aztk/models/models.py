@@ -1,9 +1,9 @@
 from typing import List
 from aztk import error
-from aztk.plugins.internal import plugin_manager
+from aztk.models.plugins.internal import plugin_manager
 from aztk.utils import constants
 import azure.batch.models as batch_models
-from aztk.plugins import PluginDefinition
+from aztk.models.plugins import PluginDefinition
 from aztk.internal import ConfigurationBase
 import yaml
 import logging

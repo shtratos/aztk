@@ -1,6 +1,6 @@
 import os
 import pytest
-from aztk.plugins.internal import PluginManager
+from aztk.models.plugins.internal import PluginManager
 from aztk.error import InvalidPluginDefinitionError
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
