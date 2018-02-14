@@ -5,15 +5,24 @@ class PluginFile:
     """
     Reference to a file for a plugin.
     """
-    def __init__(self, target: str, content: Union[str,io.StringIO]):
+    def __init__(self, target: str, local_path: str):
         self.target = target
-        if isinstance(content, str):
-            self.content = content
-        else:
-            self.content = content.getValue()
+        self.local_path = local_path
+
+
         # TODO handle folders?
 
-    @classmethod
-    def from_local(cls, local_path: str, remote_path: str):
-        with open(local_path, "r") as f:
-            return cls(remote_path, f.read())
+    def content(self):
+        with open(self.local_path, "r") as f:
+            return  f.read()
+
+
+class TextPluginFile:
+    def __init__(self, target: str, content: Union[str,io.StringIO]):
+        if isinstance(content, str):
+            self._content = content
+        else:
+            self._content = content.getValue()
+
+    def content(self):
+        return self._content

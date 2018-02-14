@@ -1,5 +1,5 @@
 import os
-from aztk.models.plugins.plugin_configuration import PluginConfiguration
+from aztk.models.plugins.plugin_configuration import PluginConfiguration, PluginPort, PluginRunTarget
 from aztk.models.plugins.plugin_file import PluginFile
 from aztk.utils import constants
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -18,7 +18,7 @@ class RStudioServerPlugin(PluginConfiguration):
             run_on=PluginRunTarget.Master,
             execute="rstudio_server.sh",
             files=[
-                PluginFile.from_local(os.path.join(dir_path, "rstudio_server.sh"), "rstudio_server.sh"),
+                PluginFile("rstudio_server.sh", os.path.join(dir_path, "rstudio_server.sh")),
             ],
             env=dict(RSTUDIO_SERVER_VERSION=version),
         )

@@ -1,6 +1,8 @@
+import inspect
 from typing import List, Union
 from enum import Enum
 from .plugin_file import PluginFile
+from aztk.internal import ConfigurationBase
 
 class PluginPort:
     """
@@ -31,7 +33,7 @@ class PluginRunTarget(Enum):
 
 
 
-class PluginConfiguration:
+class PluginConfiguration(ConfigurationBase):
     """
     Plugin manifest that should be returned in the main.py of your plugin
     :param name: Name of the plugin. Used to reference the plugin
@@ -64,3 +66,9 @@ class PluginConfiguration:
                 return True
         else:
             return False
+
+    def validate(self):
+        self._validate_required([
+            "name",
+            "execute",
+        ])

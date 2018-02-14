@@ -168,18 +168,16 @@ def encrypt_password(ssh_pub_key, password):
 
 def __add_plugins(zipf, plugins: List[PluginConfiguration]):
     data = []
-    for plugin_conf in plugins:
-        plugin = plugin_conf.plugin()
-        definition = plugin.definition
-        for file in definition.files:
-            filePath = os.path.join(plugin.path, file)
-            zipf = __add_file_to_zip(zipf, filePath, 'plugins/{0}'.format(plugin.name), binary=False)
-        if definition.execute:
+    for plugin in plugins:
+        for file in plugin.files:
+            zipf = __add_str_to_zip(zipf, file.content(), 'plugins/{0}/{1}'.format(plugin.name, file.target))
+        if plugin.execute:
             data.append(dict(
                 name=plugin.name,
-                execute='{0}/{1}'.format(plugin.name, definition.execute),
-                args=plugin.process_args(plugin_conf.args),
-                runOn=definition.run_on.value,
+                execute='{0}/{1}'.format(plugin.name, plugin.execute),
+                args=plugin.args,
+                env=plugin.env,
+                runOn=plugin.run_on.value,
             ))
 
     zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data))
