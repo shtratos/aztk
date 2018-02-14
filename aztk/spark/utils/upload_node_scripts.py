@@ -180,5 +180,5 @@ def __add_plugins(zipf, plugins: List[PluginConfiguration]):
                 runOn=plugin.run_on.value,
             ))
 
-    zipf.writestr(os.path.join('plugins', 'plugins-manifest.json'), json.dumps(data))
+    zipf.writestr(os.path.join('plugins', 'plugins-manifest.yaml'), yaml.dump(data))
     return zipf
