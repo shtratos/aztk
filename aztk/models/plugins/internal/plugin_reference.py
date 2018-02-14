@@ -1,21 +1,27 @@
-from aztk.models.plugins import PluginDefinition
-from aztk.error import InvalidPluginDefinitionError, InvalidPluginConfigurationError
+from aztk.error import InvalidPluginConfigurationError
 
 
-class Plugin:
-    def __init__(self, path: str, module):
-        """
-        Internal container for a plugin.
-        :param path: Location of the plugin
-        """
-        self.path = path
-        self.module = module
-        self.definition = module.definition()
-        if not isinstance(self.definition, PluginDefinition):
-            raise InvalidPluginDefinitionError(
-                "Plugin {0} definition method doesn't return a PluginDefinition object".
-                format(path))
-        self.name = self.definition.name
+class PluginReference:
+    """
+    Contains the configuration to use a plugin
+    """
+    def __init__(self, name, args: dict = None):
+        self.name = name
+        self.args = args or dict()
+        if plugin_manager.has_plugin(self.name):
+            self.definition = plugin_manager.get_plugin(self.name).definition
+
+    def plugin(self):
+        return plugin_manager.get_plugin(self.name)
+
+    def validate(self) -> bool:
+        if not self.name:
+            raise error.AztkError("Plugin is missing a name")
+
+        if not self.definition:
+            raise error.AztkError(
+                "Cannot find a plugin with name '{0}'".format(self.name))
+        self.plugin().validate_args(self.args)
 
     def validate_args(self, args: dict):
         """

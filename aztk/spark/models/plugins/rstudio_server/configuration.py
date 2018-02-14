@@ -2,7 +2,6 @@ import os
 from aztk.models.plugins.plugin_configuration import PluginConfiguration
 from aztk.models.plugins.plugin_file import PluginFile
 from aztk.utils import constants
-
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
