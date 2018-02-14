@@ -1,5 +1,2 @@
-from .plugin_definition import *
-
-"""
-This module contains models and utils to be used in a plugin definition
-"""
+from .plugin_file import *
+from .plugin_configuration import *

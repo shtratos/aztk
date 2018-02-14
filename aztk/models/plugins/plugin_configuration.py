@@ -1,6 +1,6 @@
 from typing import List, Union
 from enum import Enum
-
+from .plugin_file import PluginFile
 
 class PluginPort:
     """
@@ -10,7 +10,7 @@ class PluginPort:
         :param name: [Optional] name to differentiate ports if you have multiple
     """
 
-    def __init__(self, internal: int, public: Union[int,bool] = False, name=None):
+    def __init__(self, internal: int, public: Union[int, bool] = False, name=None):
 
         self.internal = internal
         self.expose_publicly = bool(public)
@@ -43,7 +43,7 @@ class PluginArgument:
             self.required = len(name) == 1
 
 
-class PluginDefinition:
+class PluginConfiguration:
     """
     Plugin manifest that should be returned in the main.py of your plugin
     :param name: Name of the plugin. Used to reference the plugin
@@ -55,9 +55,9 @@ class PluginDefinition:
     def __init__(self,
                  name: str,
                  ports: List[PluginPort] = None,
-                 files: List[str] = None,
+                 files: List[PluginFile] = None,
                  execute: str = None,
-                 args = None,
+                 args=None,
                  run_on: PluginRunTarget = PluginRunTarget.Master):
         self.name = name
         # self.docker_image = docker_image
