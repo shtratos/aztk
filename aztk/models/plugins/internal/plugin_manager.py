@@ -28,6 +28,7 @@ class PluginManager:
         return name in self.plugins
 
     def get_plugin(self, name: str, args: dict = None):
+        args = args or dict()
         if not self.has_plugin(name):
             raise InvalidPluginReferenceError("Cannot find a plugin with name '{0}'".format(name))
         plugin_cls = self.plugins[name]

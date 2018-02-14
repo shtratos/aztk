@@ -1,31 +1,31 @@
 import os
 import pytest
+from aztk.models.plugins import PluginConfiguration
 from aztk.models.plugins.internal import PluginManager
-from aztk.error import InvalidPluginDefinitionError
+from aztk.error import InvalidPluginReferenceError
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 fake_plugin_dir = os.path.join(dir_path, "fake_plugins")
 
-def test_invalid_path():
-    plugin_manager = PluginManager()
-    message = "Plugin cannot be loaded\. Path .* doesn't exists\."
-    with pytest.raises(InvalidPluginDefinitionError, match=message):
-        plugin_manager.load_plugin("/invalid/path/for/plugin/doesnot/exists")
+class RequiredArgPlugin(PluginConfiguration):
+    def __init__(self, req_arg):
+        super().__init__(name="required-arg")
 
-def test_missing_main():
+def test_missing_plugin():
     plugin_manager = PluginManager()
-    message = "Plugin cannot be loaded. Path .* doesn't contain an entry file main.py"
-    with pytest.raises(InvalidPluginDefinitionError, match=message):
-        plugin_manager.load_plugin(os.path.join(fake_plugin_dir, "missing_main"))
+    message = "Cannot find a plugin with name .*"
+    with pytest.raises(InvalidPluginReferenceError, match=message):
+        plugin_manager.get_plugin("non-existing-plugin")
 
-def test_missing_definition():
+def test_extra_args_plugin():
     plugin_manager = PluginManager()
-    message = "Plugin .* is missing a function called 'definition'"
-    with pytest.raises(InvalidPluginDefinitionError, match=message):
-        plugin_manager.load_plugin(os.path.join(fake_plugin_dir, "missing_definition"))
+    message = "Plugin JupyterPlugin doesn't have an argument called 'invalid'"
+    with pytest.raises(InvalidPluginReferenceError, match=message):
+        plugin_manager.get_plugin("jupyter", args=dict(invalid="foo"))
 
-def test_invalid_definition_returned():
+def test_missing_required_arg():
     plugin_manager = PluginManager()
-    message = "Plugin .* definition method doesn't return a PluginDefinition object"
-    with pytest.raises(InvalidPluginDefinitionError, match=message):
-        plugin_manager.load_plugin(os.path.join(fake_plugin_dir, "invalid_definition"))
+    plugin_manager.plugins["required-arg"] = RequiredArgPlugin
+    message = "Missing a required argument req_arg for plugin RequiredArgPlugin"
+    with pytest.raises(InvalidPluginReferenceError, match=message):
+        plugin_manager.get_plugin("required-arg")
