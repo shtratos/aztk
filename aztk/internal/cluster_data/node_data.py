@@ -36,7 +36,6 @@ class NodeData:
         self._add_plugins()
         self._add_spark_configuration()
         self._add_user_conf()
-        self.add_file(os.path.join(constants.ROOT_PATH, 'aztk', 'utils', 'command_builder.py'), '', binary=False)
         return self
 
     def done(self):
