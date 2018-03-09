@@ -49,7 +49,7 @@ fi
 
 # Unzip resource files and set permissions
 apt-get -y install unzip
-chmod 777 $AZ_BATCH_TASK_WORKING_DIR/docker_main.sh
+chmod 777 $AZ_BATCH_TASK_WORKING_DIR/aztk/node_scripts/docker_main.sh
 
 # Check docker is running
 docker info > /dev/null 2>&1
@@ -71,7 +71,7 @@ else
     until [ "`/usr/bin/docker inspect -f {{.State.Running}} $container_name`"=="true" ]; do
         sleep 0.1;
     done;
-    
+
     # wait until container setup is complete
     docker exec spark /bin/bash -c 'python $DOCKER_WORKING_DIR/wait_until_setup_complete.py'
 

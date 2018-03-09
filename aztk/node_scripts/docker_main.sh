@@ -8,6 +8,7 @@ set -e
 # Setup custom scripts
 # --------------------
 custom_script_dir=$DOCKER_WORKING_DIR/custom-scripts
+aztk_dir=$DOCKER_WORKING_DIR/aztk
 
 # -----------------------
 # Preload jupyter samples
@@ -25,7 +26,10 @@ done
 # ----------------------------
 # use python v3.5.4 to run aztk software
 echo "Starting setup using Docker"
+#
 $(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/pip install -r $(dirname $0)/requirements.txt
+# Install the aztk pockage to be accessible everywhere
+$(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/pip install -e $aztk_dir
 
 echo "Running main.py script"
 $(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/python $(dirname $0)/main.py install
