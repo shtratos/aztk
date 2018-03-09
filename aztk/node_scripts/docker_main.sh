@@ -26,10 +26,9 @@ done
 # ----------------------------
 # use python v3.5.4 to run aztk software
 echo "Starting setup using Docker"
-#
+
 $(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/pip install -r $(dirname $0)/requirements.txt
-# Install the aztk pockage to be accessible everywhere
-$(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/pip install -e $aztk_dir
+export PYTHONPATH=$PYTHONPATH;$DOCKER_WORKING_DIR
 
 echo "Running main.py script"
 $(pyenv root)/versions/$AZTK_PYTHON_VERSION/bin/python $(dirname $0)/main.py install
